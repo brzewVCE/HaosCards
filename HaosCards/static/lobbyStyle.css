@@ -1,0 +1,241 @@
+body {
+    text-align: center;
+    background-color: #1F51FF;
+    margin: 0; /* Remove default body margin */
+    padding: 0; /* Remove default body padding */
+    font-family: 'Roboto', sans-serif;
+    
+
+}
+
+.left-column {
+    display: flex; 
+    flex: 1;
+    justify-content: center;
+    float:left;
+    width:50%;
+    background:#1F51FF;
+    padding:20px;
+    box-sizing:border-box;
+    min-height:600px;
+}
+.right-column {
+    display: flex; 
+    flex-wrap: wrap;
+    justify-content: center;
+    float:right;
+    width: 50%;
+    background:white;
+    padding:20px;
+    box-sizing:border-box;
+}
+
+@media (max-width: 767px) {
+.left-column, .right-column {
+width: 100%;
+    }
+}       
+
+
+
+.players-counter {
+    margin-top: 10px;
+    color: white;
+    font-size: 3rem;
+    letter-spacing: .2rem;
+    flex-basis: 100%; /* Take up full width of the header */
+    text-align: center; /* Center the text within the header */
+    margin-bottom: 10px; /* Add margin to separate from game code */
+    font-weight: bold;
+    
+}
+
+.game-code {
+    color:#007BFF;
+    letter-spacing: .3rem;
+    font-size: 64px;
+    flex-basis: 100%; /* Take up full width of the header */
+    text-align: center; /* Center the text within the header */
+    cursor: pointer;
+    font-weight: bold;
+
+}
+
+.content-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 20px; /* Add margin to create space */
+}
+
+.players-container {
+    width: 70%; /* Set player-list width */
+    height: auto;
+    overflow: auto;
+    padding: 10px;
+    text-align: left;
+    overflow-x: auto;
+}
+
+.player {
+    width: auto;
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    border-bottom: #fff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.player-name {
+    width: 70%;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    text-overflow: ellipsis;
+}
+
+.kick-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    overflow: visible;
+}
+
+.owner-button {
+    font-size: 1.2rem;
+    background: green;
+    font-weight: bold;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+}
+
+.disabled-button {
+    pointer-events: none;
+    opacity: 0.5; 
+}
+.settings-container {
+    min-height: 10vh;
+    width: 100%;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+    background-color: #f0f0f0;
+}
+
+.settings-left {
+    padding: 10px;
+    width: 50%;
+}
+
+.entry {
+    margin-bottom: 10px;
+}
+
+.text {
+    display: inline-block;
+    width: 200px; /* Adjust width as needed */
+    font-size: larger;
+}
+
+.arrow-button {
+    font-size: 1.2em;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    display: flex; 
+    justify-content: center;
+    align-items: center; 
+}
+
+.arrow-button:hover {
+    background-color: #0056b3;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.value {
+    width: 50px;
+    color: #007BFF;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    background-color: #f0f0f0;
+    font-size: 1.5em;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+
+.value:focus {
+    outline: none; /* Remove the default focus outline */
+    border-color: #007BFF; /* Change the border color on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a box shadow on focus */
+}
+
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    justify-content: center;
+}
+
+.start-button {
+    background-color: #1F51FF;
+    border:#333 5px;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    text-transform: uppercase;
+    width: 130px;
+    margin: 5px;
+}
+.leave-button {
+    background-color: red;
+    border:#333 5px;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    text-transform: uppercase;
+    width: 130px;
+    margin: 5px;
+}
+
+.hidden{
+display: none;
+}
+.disabled-input {
+    pointer-events: none;
+    cursor: not-allowed;
+}       
+
+.leave-button:hover,
+.start-button:hover,
+.leave-button:active,
+.start-button:active {
+    background-color: #333;
+}

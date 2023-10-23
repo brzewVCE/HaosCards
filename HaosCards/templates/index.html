@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Page</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        @font-face {
+            font-family: 'Helvetica Neue';
+            src: url('static/HelveticaNeue.woff2') format('woff2'), /* Modern Browsers */
+                url('static/HelveticaNeue.woff') format('woff'); /* Older Browsers */
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        
+        @keyframes wave {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        #welcome-text {
+            color:#007BFF;
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            animation: wave 2s infinite linear;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            
+        }
+
+
+        #nickname {
+            width: 300px;
+            height: 40px;
+            font-size: 16px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        #nickname:focus {
+            outline: none; /* Remove the default focus outline */
+            border-color: #007BFF; /* Change the border color on focus */
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a box shadow on focus */
+        }
+
+        #joinButton {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            
+        }
+
+        #createButton {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        /* Hide the default number input arrows */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        /* Style the number input */
+        input[type="number"] {
+            padding: 10px; /* Adjust the padding as needed */
+            border: 1px solid #ccc; /* Add a border if desired */
+            border-radius: 5px; /* Add rounded corners if desired */
+            font-size: 16px; /* Adjust the font size as needed */
+            width: 200px; /* Adjust the width as needed */
+            background-color: #f7f7f7; /* Add a background color if desired */
+            color: #333; /* Set the text color */
+        }
+
+/* Style the number input on focus */
+input[type="number"]:focus {
+    outline: none; /* Remove the default focus outline */
+    border-color: #007BFF; /* Change the border color on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a box shadow on focus */
+}
+
+
+    </style>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+        var socket;
+        $(document).ready(function(){
+            socket = io.connect('http://' + document.domain + ':' + location.port+'/');
+            window.addEventListener('pageshow', (event) => {
+                if (event.persisted) {
+                // Page was restored from the bfcache
+                location.reload(); // Reload the page
+
+            }
+            });
+            
+            socket.on('game_code_valid', function(data) {
+                console.log('Received response:', data);
+                if (data.valid == 'True') {
+                    nickname = $('#nickname').val();
+                    gamecode = $('#numberInput').val();
+                    socket.emit('join',nickname,gamecode);
+                    return window.location.href = "{{ url_for('lobby') }}";
+                }
+                if (data.valid == 'Name') {
+                    return $('#warning').text('There is already a user with that nickname in the lobby. Please change your name');
+                }
+                else {
+                    return $('#warning').text('Invalid game code');
+                }
+            });
+        })    
+        
+        async function validateGameCode() {
+            nickname = $('#nickname').val()
+            if(nickname == '') {
+                $('#warning').text('Enter a nickname')
+                return false;
+            }
+            gamecode = $('#numberInput').val();
+            if(/^\d{6}$/.test(gamecode)) {
+                await socket.emit('validate_game_code', gamecode, nickname)
+                console.log('Sent game code for validation:', gamecode);
+            } else {
+                $('#warning').text('You must provide a 6 digit game code');
+            }
+            return false;
+        };
+        
+        async function createLobby() {
+            nickname=$('#nickname').val();
+            const gamecode = generateRandomString(6);
+            if(nickname=='') {
+                $('#warning').text('Enter a nickname')
+                return false;
+            }
+            else {
+                await socket.emit('create_lobby', nickname, gamecode)
+                console.log(nickname, ' created a lobby')
+                await socket.emit('join',)
+                window.location.href = "{{ url_for('lobby') }}";
+            }
+        }
+        function generateRandomNumber() {
+            return Math.floor(Math.random() * 10); // Generates a random number between 0 and 9
+        }
+
+        function generateRandomString(length) {
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += generateRandomNumber();
+            }
+            return result;
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1 title="Haos Cards" id="welcome-text">Haos Cards</h1>
+        <!-- ... Rest of your HTML ... -->
+            <input type="text" id="nickname" placeholder="Enter your nickname" name="nickname" required>
+            <br>
+            <button type="button" name="action" value="create" id="createButton" onclick='createLobby()'>Create Game</button>
+            <button type="button" name="action" value="join" id="joinButton" onclick="validateGameCode()">Join Game</button>
+            <br>
+            <input type="number" id="numberInput" name="gamecode" placeholder="Gamecode" min='100000' max="999999">
+            <br>
+        <p id="warning" style="color: red;"></p>
+    
+        
+        
+    </body>
+        
+    </div>
+
+</html>

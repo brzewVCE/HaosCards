@@ -1,0 +1,330 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: url('fonts/HelveticaNeue.woff2') format('woff2'), /* Modern Browsers */
+       url('fonts/HelveticaNeue.woff') format('woff'); /* Older Browsers */
+  font-weight: normal;
+  font-style: normal;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+.layout {
+    display: grid;
+    grid: "header header header" auto "leftSide body rightSide" 1fr "footer footer footer" auto / auto 1fr auto;
+    gap: 8px;
+    background-color: #f0f0f0;
+    height: 100vh;
+    width: 100vw;
+    outline: 2px solid black; /* Add an outline to the layout container */
+}
+
+.header {
+    grid-area: header;
+    display: flex;
+    justify-content: center;
+    outline: 2px solid green; /* Add an outline to the header container */
+}
+
+.leftSide {
+    grid-area: leftSide;
+    outline: 2px solid blue; /* Add an outline to the leftSide container */
+    position: relative;
+}
+
+.body {
+    grid-area: body;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    outline: 2px solid orange; /* Add an outline to the body container */
+}
+
+.rightSide {
+    grid-area: rightSide;
+    outline: 2px solid purple; /* Add an outline to the rightSide container */
+}
+
+.footer {
+    grid-area: footer;
+    display: flex;
+    justify-content: center;
+    outline: 2px solid yellow; /* Add an outline to the footer container */
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#scoreboard {
+    position: absolute; /* Set the scoreboard to an absolute position within the leftSide container */
+    top: 10px; /* Adjust the top position as needed */
+    left: 10px; /* Adjust the left position as needed */
+    background-color: #fff;
+    padding: 10px;
+    border: 2px solid #000;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    width: 10vw;
+}
+
+
+#timer {
+    font-size: 1.5rem;
+    color: #1F51FF;
+}
+
+.black_card {
+    width: 63.5%;
+    max-width: 100px;
+    height: 88%;
+    max-height: 150px;
+    background-color: #000;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    margin: 5px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.cardContainer {
+    display: flex;
+    flex-wrap: wrap;
+    overflow-x: auto;
+    justify-content: center;
+    align-items: center;
+    height: 40vh;
+    width: 70vw;
+    outline: 2px solid transparent;
+    box-shadow: 0 0 0px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.3s ease-in-out;
+    margin-bottom: 10px;
+    
+}
+
+.cardContainer:hover {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+}
+
+.white_card {
+    width: 63.5%;
+    max-width: 100px;
+    height: 88%;
+    max-height: 150px;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    margin: 5px;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .white_card:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+.selected {
+    transform: scale(1.05);
+    background-color: #1F51FF;
+    border-color: #1F51FF;
+    box-shadow: 0 0 30px rgba(31, 81, 255, 0.5);
+}
+
+#selectButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+    #selectButton:hover {
+        background-color: #1F51FF;
+    }
+
+    </style>
+    <title>Haos Cards</title>
+</head>
+<body>
+    <section class="layout">
+        <div class="header">
+            <div id="alert"></div>
+            <div id="timer">Start!</div>
+        </div>
+        <div class="leftSide">
+            <div id="scoreboard">
+                Kuba i chuj, bardzo długi tekst alalalallalalalallala
+            </div>
+        </div>
+        <div class="body">
+            <div id="container">
+                
+                <div class="cardContainer" id="blackcardContainer"></div>
+                <div class="cardContainer" id="whitecardContainer">
+                    <!-- white_cards will be dynamically added here -->
+                </div>
+                <button id="selectButton">Select</button>
+            </div>
+        </div>
+        <div class="rightSide"></div>
+        <div class="footer">
+            
+        </div>
+    </section>
+    
+
+    <script type="text/javascript" charset="utf-8">
+        // Function to move the selected white card to the black card container
+function onClickSelectButton() {
+    // Check if a white card is selected
+    if (selected_white_card) {
+        // Remove the "selected" class from the selected white card
+        selected_white_card.classList.remove("selected");
+
+        // Clone the selected white card element
+        const clonedCard = selected_white_card.cloneNode(true);
+
+        // Add the cloned white card to the black card container
+        black_cardContainer.appendChild(clonedCard);
+
+        // Remove the selected white card from the white card container
+        selected_white_card.parentNode.removeChild(selected_white_card);
+
+        // Reset the selected_white_card variable to null
+        selected_white_card = null;
+
+        // Create a new white card and add it to the white card container
+        const newWhiteCardDescription = "New White Card Description";
+        const newWhiteCard = create_white_card(newWhiteCardDescription);
+        white_cardContainer.appendChild(newWhiteCard);
+    }
+}
+
+function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            timer = duration;
+        }
+    }, 1000);
+}
+
+window.onload = function () {
+    var roundTime = 60 * 5,
+        display = document.querySelector('#timer');
+    startTimer(fiveMinutes, display);
+};
+
+
+// Get the "selectButton" element from the document
+const button = document.getElementById("selectButton");
+
+// Attach the "onClickSelectButton" function to the button's click event
+button.onclick = onClickSelectButton;
+
+// Define an array of white card descriptions
+const white_cardsData = [
+    "white_card 1 Description",
+    "white_card 2 Description",
+    "white_card 3 Description",
+    "white_card 4 Description",
+    "white_card 5 Description",
+    "white_card 6 Description",
+    "white_card 7 Description",
+    "white_card 8 Description"
+];
+
+// Define an array of black card descriptions (currently contains "Test")
+const black_cardsData = [
+    "Test"
+];
+
+// Get the "whitecardContainer" and "blackcardContainer" elements from the document
+const white_cardContainer = document.getElementById("whitecardContainer");
+const black_cardContainer = document.getElementById("blackcardContainer");
+
+// Initialize a variable to keep track of the selected white card (null initially)
+let selected_white_card = null;
+
+// Function to create a white card element given a description and index
+function create_white_card(description, index) {
+    const white_card = document.createElement("div");
+    white_card.className = "white_card";
+    white_card.textContent = description;
+
+    // Add a click event listener to each white card
+    white_card.addEventListener("click", () => {
+        // If a white card is already selected, remove the "selected" class
+        if (selected_white_card) {
+            selected_white_card.classList.remove("selected");
+        }
+
+        // Set the clicked white card as the selected one and add the "selected" class
+        selected_white_card = white_card;
+        selected_white_card.classList.add("selected");
+    });
+
+    return white_card;
+}
+function create_black_card(description, index) {
+    const black_card = document.createElement("div");
+    black_card.className = "black_card";
+    black_card.textContent = description;
+    return black_card;
+}
+// Function to initialize the white cards and add them to the white card container
+function initialize_white_cards() {
+    white_cardsData.forEach((description, index) => {
+        const white_card = create_white_card(description, index);
+        white_cardContainer.appendChild(white_card);
+    });
+}
+
+function initialize_black_card() {
+    black_cardsData.forEach((description, index) => {
+        const black_card = create_black_card(description, index);
+        black_cardContainer.appendChild(black_card);
+    });
+}
+
+// Call the initialize_white_cards function to populate the white card container
+initialize_white_cards();
+initialize_black_card();
+
+    </script>
+</body>
+</html>
