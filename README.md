@@ -25,6 +25,9 @@ You can install the required Python packages using the provided `requirements.tx
 ```
 pip install -r requirements.txt
 ```
+## Disclaimer
+All files in the 'static' folder are test files, and all of the JavaScript (JS) and CSS code is contained within the HTML file. This is because I have an extension that allows me to visualize an HTML file in real-time, but it does not work if the code is in a different file. This issue will be addressed in future releases.
+
 ## Acknowledgements
 
 This project is inspired by Cards Against Humanity, a party game for horrible people.
