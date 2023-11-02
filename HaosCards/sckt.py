@@ -46,7 +46,6 @@ def register_events(socketio):
 
     @socketio.on('player_update')
     def player_update(nickname, gamecode, action):
-        #usuwanie przy leave
         if action == 'join':
             if gamecode in lobbies:
                 join_room(gamecode)
