@@ -13,7 +13,6 @@ def register_events(socketio):
 
     @socketio.on('validate_game_code')
     def validate_game_code(gamecode, nickname):
-        #niech sprawdza czy jest tez gracz o takiej nazwie
         print(f"Received game code: {gamecode}")
         if gamecode in lobbies:
             if nickname in lobbies[gamecode].players:
@@ -67,28 +66,21 @@ def register_events(socketio):
                 data_update(gamecode)
         if action == 'leave':
             if gamecode in lobbies:
-                leave_room(gamecode)
                 lobbies[gamecode].players.remove(nickname)
                 if lobbies[gamecode].owner == nickname:
                     if len(lobbies[gamecode].players) != 0:
                         lobbies[gamecode].owner = random.choice(lobbies[gamecode].players)
                     else:
                         lobbies.pop(gamecode)
-                        leave_room(gamecode)
-                        session.clear()
+                        close_room(gamecode)
                         print(f'{nickname} left {gamecode}, deleting it')
-                        return print(f'All lobbies: {str(lobbies)}')
-                leave_room(gamecode)
-                session.clear()
-                print(f'{nickname} left {gamecode}')
+                        return leave_lobby(gamecode, nickname)
+                leave_lobby(gamecode, nickname)
                 print(f'All lobbies: {str(lobbies)}')
                 data_update(gamecode)
 
 
-    @socketio.on('left_lobby')
-    def left(message):
-        gamecode = session.get('room')
-        nickname = session.get('nickname')
+    def leave_lobby(gamecode, nickname):
         leave_room(gamecode)
         session.clear()
         print(f'{nickname} left {gamecode}')
@@ -114,7 +106,6 @@ def register_events(socketio):
        
     @socketio.on('change_settings')
     def change_settings(gamecode, action, target):
-        #//funkcja
         settings = lobbies[gamecode].settings
         if target != 'rt':
             x=1
