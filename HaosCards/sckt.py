@@ -33,14 +33,15 @@ def register_events(socketio):
         print(f'{nickname} generated lobby {gamecode}')
         lobbies_as_strings = [str(lobby) for lobby in lobbies]
         print(f'All lobbies: {lobbies_as_strings}')
+        join(nickname=nickname,gamecode=gamecode)
 
 
     @socketio.on('join')
     def join(nickname, gamecode):
         session['nickname'] = nickname
         session['room'] = gamecode
-        room = gamecode
-        join_room(room)
+        room = request.sid
+        join_room(gamecode)
         print(f'{nickname} joined {room}')
         print(f'My rooms: {rooms()}')
 

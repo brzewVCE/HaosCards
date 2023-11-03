@@ -172,7 +172,6 @@ input[type="number"]:focus {
             else {
                 await socket.emit('create_lobby', nickname, gamecode)
                 console.log(nickname, ' created a lobby')
-                await socket.emit('join',)
                 window.location.href = "{{ url_for('lobby') }}";
             }
         }
