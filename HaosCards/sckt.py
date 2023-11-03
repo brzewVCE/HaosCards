@@ -41,9 +41,16 @@ def register_events(socketio):
         session['nickname'] = nickname
         session['room'] = gamecode
         room = request.sid
+        new_player = Player(name=nickname, 
+                            status = 'player',
+                            unique_room = room)
+        if gamecode in lobbies:
+            lobbies[gamecode].player_data.append(new_player)
+            print(f"{lobbies[gamecode].player_data}")
         join_room(gamecode)
         print(f'{nickname} joined {room}')
-        print(f'My rooms: {rooms()}')
+        print(f"{nickname}'s rooms: {rooms()}")
+        print(f'{str(new_player)}')
 
     @socketio.on('player_update')
     def player_update(nickname, gamecode, action):
