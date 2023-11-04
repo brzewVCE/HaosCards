@@ -21,14 +21,17 @@ def home():
     if session.get('room') in lobbies and session.get('nickname') is not None:
         print(f"Returned player to {session.get('room')}")
         return redirect(url_for('lobby'))
+    if session.get('room') in games and session.get('nickname') is not None:
+        print(f"Returned player to {session.get('room')}")
+        return redirect(url_for('play'))
     
     return render_template('index.html', session=session)
 
 
 @app.route('/play', methods=['GET','POST'])
 def play():
-     
-    return render_template('play.html')
+    if session.get('room') in lobbies:
+        return render_template('play.html', session=session)
 
 @app.route('/lobby', methods=['GET','POST'])
 def lobby():
