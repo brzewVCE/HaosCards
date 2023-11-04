@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, send_from_directory, redirect
 from flask_socketio import SocketIO
 from flask_session import Session
 from sckt import register_events, lobbies, games
+from color_print import print_info, print_error, print_warning
 
 app = Flask(__name__)
 app.debug = True

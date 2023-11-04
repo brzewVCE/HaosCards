@@ -5,6 +5,7 @@ import json
 import flask
 import random
 from classes import Game, Player, Lobby, generate_gamecode
+from color_print import print_info, print_error, print_warning
 
 lobbies={}
 games={}
