@@ -6,9 +6,12 @@ import flask
 import random
 from classes import Game, Player, Lobby, generate_gamecode
 from color_print import print_info, print_error, print_warning
+import eventlet
+import random
 
 lobbies={}
 games={}
+sio.acknowledgements = {}
 
 def register_events(socketio):
 
@@ -86,10 +89,6 @@ def register_events(socketio):
         session.clear()
         print(f'{nickname} left {gamecode}')
 
-    @socketio.on('pr')
-    def pr(message):
-        return print(f'{message}')
-
     @socketio.on('get_data')
     def get_data(gamecode):
         data_update(gamecode)
@@ -121,3 +120,12 @@ def register_events(socketio):
 
     def send_settings(gamecode,settings):
         emit('settings_data', settings, to=gamecode)
+
+    def wait_for_ack(func, *args, **kwargs):
+        id = random.randint(0, 100000)
+        while True:
+            if id in sio.acknowledgements:
+                break
+            else:
+                sio.emit('data', {'id': id, 'args': args, 'kwargs': kwargs})
+                eventlet.sleep(1)
