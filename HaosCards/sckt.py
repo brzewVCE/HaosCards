@@ -11,11 +11,7 @@ import random
 
 lobbies={}
 games={}
-<<<<<<< Updated upstream
-sio.acknowledgements = {}
-=======
 acknowledgements = {}
->>>>>>> Stashed changes
 
 def register_events(socketio):
 
@@ -125,16 +121,6 @@ def register_events(socketio):
     def send_settings(gamecode,settings):
         emit('settings_data', settings, to=gamecode)
 
-<<<<<<< Updated upstream
-    def wait_for_ack(func, *args, **kwargs):
-        id = random.randint(0, 100000)
-        while True:
-            if id in sio.acknowledgements:
-                break
-            else:
-                sio.emit('data', {'id': id, 'args': args, 'kwargs': kwargs})
-                eventlet.sleep(1)
-=======
     #make a callback function for this
     def ack(function_name, data, gamecode):
         id = random.randint(0, 1000000000)
@@ -144,4 +130,3 @@ def register_events(socketio):
 
 
 
->>>>>>> Stashed changes
