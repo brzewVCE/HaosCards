@@ -49,5 +49,4 @@ niech sie upewnia ze dostalo dane
 
 https://stackoverflow.com/questions/22259847/application-not-picking-up-css-file-flask-python
 
-wali sei gdzies na pokoju, niby dane sie zgadzaja ale jednak ...
-zobaczyc jeszcze raz mechanizm send
+naprawic przy leave

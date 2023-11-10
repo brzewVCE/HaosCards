@@ -41,46 +41,49 @@ def register_events(socketio):
 
     @socketio.on('join')
     def join(nickname, gamecode):
+        if gamecode not in lobbies:
+            return print_error(f"Gamecode {gamecode} not found")
         session['nickname'] = nickname
         session['room'] = gamecode
         player_room = str(uuid.uuid4())
         session['player_room'] = player_room
-        join_room(player_room)
         new_player = Player(name=nickname, 
                             status = 'player',
                             unique_room = player_room)
-        if gamecode in lobbies:
-            lobbies[gamecode].player_data.append(new_player)
-            print_warning(f"{lobbies[gamecode].player_data}")
+        lobbies[gamecode].player_data.append(new_player)
+        print_warning(f"{str(lobbies[gamecode].player_data)}")
         join_room(gamecode)
-        print(f'{nickname} joined {player_room}')
+        join_room(player_room)
+        print_info(f'{nickname} joined {player_room} and {gamecode}')
         print_error(f"{nickname}'s rooms: {rooms()}")
-        print(f'{str(new_player)}')
+        print_info(f'{str(new_player)}')
 
     @socketio.on('player_update')
     def player_update(nickname, gamecode, action):
-        if gamecode in lobbies:
-            if action == 'join':
-                join_room(gamecode)
-                if lobbies[gamecode].owner == None:
-                    lobbies[gamecode].owner = nickname
-                
-                if nickname not in lobbies[gamecode].players:
-                    lobbies[gamecode].players.append(nickname)
-                print(f'{nickname} joined {gamecode}')
+        if gamecode not in lobbies:
+            return print_error(f"Gamecode {gamecode} not found")
+        if action == 'join':
+            join_room(gamecode)
+            join_room(session['player_room'])
+            if lobbies[gamecode].owner == None:
+                lobbies[gamecode].owner = nickname
             
-            if action == 'leave':
-                if gamecode in lobbies:
-                    lobbies[gamecode].players.remove(nickname)
-                    if lobbies[gamecode].owner == nickname:
-                        if len(lobbies[gamecode].players) != 0:
-                            lobbies[gamecode].owner = random.choice(lobbies[gamecode].players)
-                        else:
-                            lobbies.pop(gamecode)
-                            close_room(gamecode)
-                            print(f'{nickname} left {gamecode}, deleting it')
-                            return leave_lobby(gamecode, nickname)
-                        leave_lobby(gamecode, nickname)
+            if nickname not in lobbies[gamecode].players:
+                lobbies[gamecode].players.append(nickname)
+            print(f'{nickname} joined {gamecode}')
+        
+        if action == 'leave':
+            if gamecode in lobbies:
+                lobbies[gamecode].players.remove(nickname)
+                if lobbies[gamecode].owner == nickname:
+                    if len(lobbies[gamecode].players) != 0:
+                        lobbies[gamecode].owner = random.choice(lobbies[gamecode].players)
+                    else:
+                        lobbies.pop(gamecode)
+                        close_room(gamecode)
+                        print(f'{nickname} left {gamecode}, deleting it')
+                        return leave_lobby(gamecode, nickname)
+                    leave_lobby(gamecode, nickname)
 
         print(f'All lobbies: {str(lobbies)}')
         data_update(gamecode)
@@ -99,17 +102,18 @@ def register_events(socketio):
         players = lobbies[gamecode].players
         owner = lobbies[gamecode].owner
         data = {'players': players, 'owner':owner}
-        emit('data_update', data, to=gamecode)
+        send_data('data_update', data, gamecode)
         print(f'Updated with data {players} {owner}')
 
     @socketio.on('request_settings')
     def request_settings(gamecode):
         settings = lobbies[gamecode].settings
         send_data("settings_data", settings, gamecode)
-        # send_settings(gamecode,settings)
        
     @socketio.on('change_settings')
     def change_settings(gamecode, action, target):
+        if gamecode not in lobbies:
+            return print_error(f"Gamecode {gamecode} not found")
         settings = lobbies[gamecode].settings
         if target != 'rt':
             x=1
@@ -127,21 +131,29 @@ def register_events(socketio):
 
 
     def send_data(function_name, data, gamecode):
+        attempts = 0
+        attempts_limit = 50
+        if gamecode not in lobbies:
+            return print_error(f"Gamecode {gamecode} not found")
         players = lobbies[gamecode].player_data
         for player in players:
             player_room = player.unique_room
             session_id = request.sid
+            print_warning(str(rooms()))
             print_error(f"session_id: {session_id}")
             acknowledgement_id = str(uuid.uuid4())
             acknowledgements[acknowledgement_id] = False
             data['acknowledgement_id'] = acknowledgement_id
             print_warning(f"data: {data}")
-            while acknowledgements[acknowledgement_id] != True:
+            while acknowledgements[acknowledgement_id] != True and attempts < attempts_limit:
                 emit(function_name, data, to=player_room)
                 print_info(f"Sent {function_name} to {player_room}")
                 print_info(f"{acknowledgement_id} {acknowledgements[acknowledgement_id]}")
                 eventlet.sleep(0.1)
-            
+                attempts += 1
+            if attempts == attempts_limit:
+                print_error(f"Failed to receive acknowledgement for {acknowledgement_id}")
+                leave_lobby(gamecode, session['nickname'])
 
     @socketio.on('acknowledge')
     def acknowledge(id):
