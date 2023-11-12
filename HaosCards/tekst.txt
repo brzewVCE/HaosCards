@@ -1,52 +1,12 @@
-﻿Backend (Python Backend):
-
-Card Data: The card data itself, including card content, categories, or any other attributes, can be stored in a database or a file. This data doesn't need to be sent to the frontend every time; instead, the backend will handle retrieving and providing this data when needed.
-
-Game Sessions: Information about active game sessions, including the participants, the current card czar, and the cards placed by players, needs to be managed on the backend. This includes tracking which cards were submitted by players and managing the rotation of the card czar.
-
-Player Scores: Keep track of player scores (points) within each game session. Update the scores whenever a player's card is selected by the card czar.
-
-User Authentication: If you have user accounts, authentication details (like usernames and passwords) will be stored securely on the backend.
-
-Game Logic and Rules: The backend will manage the core game logic and rules, ensuring fairness and consistency across different clients.
-
-Frontend (Website):
-
-Player Interface: The frontend will display the game interface to the players, showing the cards they've placed and the cards placed by others.
-
-Current Game State: Information like the current card czar, the cards placed by players in the current round, and the status of the game (e.g., whose turn it is) will be displayed on the frontend.
-
-Player Card Selections: When it's a player's turn to be the card czar, the frontend will allow them to select a card that they find most suitable. This selection will then be sent to the backend for evaluation.
-
-Real-time Updates: The frontend might utilize technologies like WebSockets to receive real-time updates from the backend about changes in the game state.
-
-Player Profiles: If you have user accounts, the frontend might display player profiles, avatars, and other relevant information.
-
-UI/UX Elements: The frontend will handle the user interface and experience, including animations, transitions, and other visual elements.
-
-Teraz:zrobić scoreboard i naprawić białe przy resize stronyściaganie danych karty z backendu, dynamiczne sesje gry, po kazdej rundzie sie reloaduje html (dane z karty sa w backendzie i sa znowu pobierane)
-
-
-pozbywanie sie kart, blank cards
+﻿pozbywanie sie kart, blank cards
 tryb tv
 czcionka helvetica neue bold
 dodać piłkę jak ktoś dołączy, naprawić labels
-ustawienia, przy starcie gry bierze wartosci (defualt, jezeli nie zostaly zmienione) i przekazuje je do backendu tworzac GameSession
 
-request set.data > receive set.data > funkcja ktora dodaje na miejsca
-jak puste to ustawienia domysl
-
-
-kickowanie musi potem callwoac get-data zeby zaktualizowac to
 po rundzie sie pokazuja punkty
-players list czy gitem jest
 niech sprawdza długość nicku
 client z pythona sztuczny
 karty sql zajbeac z pretendyouarexyz
-niech sie upewnia ze dostalo dane
+niech sie upewnia ze dostalo dane js>Python
 
-
-
-https://stackoverflow.com/questions/22259847/application-not-picking-up-css-file-flask-python
-
-naprawic przy leave
+tryby gry (cards against humanity,)

@@ -127,11 +127,6 @@ def register_events(socketio):
         else:
             settings[target] -= x
         send_data('settings_data', settings, gamecode)
-        #tu zmiana
-
-    def send_settings(gamecode,settings):
-        emit('settings_data', settings, to=gamecode)
-
 
     def send_data(function_name, data, gamecode):
         attempts = 0
