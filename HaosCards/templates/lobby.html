@@ -43,8 +43,8 @@
         
 
         $('#game-code').click(function() {
-            var content = $('#game-code').text();
-            copyToClipboard(content);
+            var gamecode = "{{session['room']}}"
+            copyToClipboard(gamecode);
         });
         
         $('.arrow-button').click(function() {

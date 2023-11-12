@@ -51,7 +51,7 @@ def register_events(socketio):
                             status = 'player',
                             unique_room = player_room)
         lobbies[gamecode].player_data.append(new_player)
-        print_warning(f"{str(lobbies[gamecode].player_data)}")
+        print_info(f"{str(lobbies[gamecode].player_data)}")
         join_room(gamecode)
         join_room(player_room)
         print_info(f'{nickname} joined {player_room} and {gamecode}')
@@ -73,23 +73,26 @@ def register_events(socketio):
             print(f'{nickname} joined {gamecode}')
         
         if action == 'leave':
-            if gamecode in lobbies:
-                lobbies[gamecode].players.remove(nickname)
-                if lobbies[gamecode].owner == nickname:
-                    if len(lobbies[gamecode].players) != 0:
-                        lobbies[gamecode].owner = random.choice(lobbies[gamecode].players)
-                    else:
-                        lobbies.pop(gamecode)
-                        close_room(gamecode)
-                        print(f'{nickname} left {gamecode}, deleting it')
-                        return leave_lobby(gamecode, nickname)
-                    leave_lobby(gamecode, nickname)
+            lobbies[gamecode].players.remove(nickname)
+            player = [player for player in lobbies[gamecode].player_data if player.name == nickname][0]
+            lobbies[gamecode].player_data.remove(player)
+            if lobbies[gamecode].owner == nickname:
+                if len(lobbies[gamecode].players) != 0:
+                    lobbies[gamecode].owner = random.choice(lobbies[gamecode].players)
+                else:
+                    lobbies.pop(gamecode)
+                    close_room(gamecode)
+                    print(f'{nickname} left {gamecode}, deleting it')
+                    return leave_lobby(gamecode, nickname)
+            leave_lobby(gamecode, nickname)
 
         print(f'All lobbies: {str(lobbies)}')
         data_update(gamecode)
 
 
     def leave_lobby(gamecode, nickname):
+        unique_room = session['player_room']
+        leave_room(unique_room)
         leave_room(gamecode)
         session.clear()
         print(f'{nickname} left {gamecode}')
@@ -138,9 +141,7 @@ def register_events(socketio):
         players = lobbies[gamecode].player_data
         for player in players:
             player_room = player.unique_room
-            session_id = request.sid
-            print_warning(str(rooms()))
-            print_error(f"session_id: {session_id}")
+            print_info(str(rooms()))
             acknowledgement_id = str(uuid.uuid4())
             acknowledgements[acknowledgement_id] = False
             data['acknowledgement_id'] = acknowledgement_id
@@ -148,7 +149,6 @@ def register_events(socketio):
             while acknowledgements[acknowledgement_id] != True and attempts < attempts_limit:
                 emit(function_name, data, to=player_room)
                 print_info(f"Sent {function_name} to {player_room}")
-                print_info(f"{acknowledgement_id} {acknowledgements[acknowledgement_id]}")
                 eventlet.sleep(0.1)
                 attempts += 1
             if attempts == attempts_limit:
