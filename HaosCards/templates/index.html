@@ -5,114 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Start Page</title>
     <style>
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        .container {
-            text-align: center;
-        }
-
-        @font-face {
-            font-family: 'Helvetica Neue';
-            src: url('static/HelveticaNeue.woff2') format('woff2'), /* Modern Browsers */
-                url('static/HelveticaNeue.woff') format('woff'); /* Older Browsers */
-            font-weight: normal;
-            font-style: normal;
-        }
-
         
-        @keyframes wave {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-        #welcome-text {
-            color:#007BFF;
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            animation: wave 2s infinite linear;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            
-        }
-
-
-        #nickname {
-            width: 300px;
-            height: 40px;
-            font-size: 16px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-
-        #nickname:focus {
-            outline: none; /* Remove the default focus outline */
-            border-color: #007BFF; /* Change the border color on focus */
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a box shadow on focus */
-        }
-
-        #joinButton {
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 20px;
-            font-size: 18px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px;
-            
-        }
-
-        #createButton {
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 20px;
-            font-size: 18px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px;
-        }
-        /* Hide the default number input arrows */
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            appearance: none;
-            margin: 0;
-        }
-
-        /* Style the number input */
-        input[type="number"] {
-            padding: 10px; /* Adjust the padding as needed */
-            border: 1px solid #ccc; /* Add a border if desired */
-            border-radius: 5px; /* Add rounded corners if desired */
-            font-size: 16px; /* Adjust the font size as needed */
-            width: 200px; /* Adjust the width as needed */
-            background-color: #f7f7f7; /* Add a background color if desired */
-            color: #333; /* Set the text color */
-        }
-
-/* Style the number input on focus */
-input[type="number"]:focus {
-    outline: none; /* Remove the default focus outline */
-    border-color: #007BFF; /* Change the border color on focus */
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a box shadow on focus */
-}
-
 
     </style>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
@@ -123,8 +16,8 @@ input[type="number"]:focus {
             socket = io.connect('http://' + document.domain + ':' + location.port+'/');
             window.addEventListener('pageshow', (event) => {
                 if (event.persisted) {
-                // Page was restored from the bfcache
-                location.reload(); // Reload the page
+                
+                location.reload();
 
             }
             });
@@ -176,7 +69,7 @@ input[type="number"]:focus {
             }
         }
         function generateRandomNumber() {
-            return Math.floor(Math.random() * 10); // Generates a random number between 0 and 9
+            return Math.floor(Math.random() * 10);
         }
 
         function generateRandomString(length) {
@@ -187,12 +80,12 @@ input[type="number"]:focus {
             return result;
         }
     </script>
+    <link href="{{ url_for('get_static_file', filename='indexStyle.css') }}" rel="stylesheet" type="text/css" >
 </head>
 
 <body>
     <div class="container">
         <h1 title="Haos Cards" id="welcome-text">Haos Cards</h1>
-        <!-- ... Rest of your HTML ... -->
             <input type="text" id="nickname" placeholder="Enter your nickname" name="nickname" required>
             <br>
             <button type="button" name="action" value="create" id="createButton" onclick='createLobby()'>Create Game</button>
