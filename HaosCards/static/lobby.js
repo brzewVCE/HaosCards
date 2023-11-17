@@ -1,11 +1,18 @@
 var socket;
     $(document).ready(function() {
         socket = io.connect('http://' + document.domain + ':' + location.port+'/');
-        
+        var PlayersDatabase = null;
+        var selectedButton = null;
         console.log('Connection established');
         
         socket.emit('player_update','{{session["nickname"]}}', "{{ session['room'] }}", 'join');
         
+        socket.on('acknowledgement', function(data) {
+            console.log(data)
+            
+        })
+
+
         socket.on('data_update', function(data) {
             console.log(data)
             var players = data.players;
@@ -13,7 +20,17 @@ var socket;
             generate_players_counter(players);
             generate_players(players, owner);
             toggleStyle(players,owner);
-            //tutaj patrzy czy to owner i daje inne css
+
+        })
+
+        socket.emit('request_settings', "{{ session['room'] }}")
+
+        socket.on('settings_data', function(data) {
+            console.log(data)
+            var points2win = data.p2w;
+            var roundTime = data.rt;
+            var cardsPerP = data.cpp;
+            generate_settings(points2win,roundTime,cardsPerP)
         })
 
         $('#game-code').click(function() {
@@ -21,8 +38,31 @@ var socket;
             copyToClipboard(content);
         });
         
+        $('.arrow-button').click(function() {
+            var action = $(this).data('action'); // Get the action (+ or -)
+            var target = $(this).data('target'); // Get the target (e.g., round time)
+            var minValue = $(this).data('min');
+            var maxValue = $(this).data('max');
+            var currentValue = parseFloat($('#'+target).text());
+            var gamecode = "{{session['room']}}"
+
+            if (selectedButton) {
+                $(selectedButton).removeClass('disabled-button');
+                $(selectedButton).removeClass('selected-button');
+            }
+
+            if (action === '+' && currentValue < maxValue) {
+                socket.emit('change_settings', gamecode, action, target);
+            } else if (action === '-' && currentValue > minValue) {
+                socket.emit('change_settings', gamecode, action, target);
+            } else {
+                $(this).addClass('disabled-button');
+            }
+            selectedButton = this;
+            $(selectedButton).addClass('selected-button');
+    });
+
         $(window).on('beforeunload', function(){
-        //leave_lobby();
         });
     });
     function leave_lobby() {
@@ -81,10 +121,14 @@ var socket;
                 ownerButton.innerHTML = 'Owner';
                 playerElement.appendChild(ownerButton);
             }
-            
-            
             container.appendChild(playerElement);
-            });
+            });    
+    }
+
+    function generate_settings(p2w,rt,cpp) {
+        $('#p2w').text(p2w);
+        $('#rt').text(rt);
+        $('#cpp').text(cpp);
     }
 
     function copyToClipboard(text) {
@@ -101,6 +145,7 @@ var socket;
         nickname = "{{ session['nickname'] }}"
         var kickButtons = document.getElementsByClassName('kick-button');
         var inputs = document.getElementsByClassName('input');
+        var changeArrows = document.getElementsByClassName('arrow-button')
         var startButton = document.getElementById('start-button');
 
         // Reset styles for all elements
@@ -109,6 +154,9 @@ var socket;
         }
         for (var i = 0; i < inputs.length; i++) {
             inputs[i].classList.remove('disabled-input');
+        }
+        for (var i = 0; i < changeArrows.length; i++) {
+            changeArrows[i].classList.remove('hidden');
         }
         startButton.classList.remove('hidden', 'disabled-button');
 
@@ -119,12 +167,16 @@ var socket;
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].classList.add('disabled-input');
             }
+            for (var i = 0; i < changeArrows.length; i++) {
+                changeArrows[i].classList.add('hidden');
+            }
             startButton.classList.add('hidden');
 
         }
         if (players.length < 3){
             startButton.classList.add('disabled-button');
         }
+        //przyciski zwiekszanie zmniejszanie
     }
 
 

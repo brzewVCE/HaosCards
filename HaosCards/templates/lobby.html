@@ -12,9 +12,10 @@
         var PlayersDatabase = null;
         var selectedButton = null;
         console.log('Connection established');
-        
+        console.log('{{session["nickname"]}}', "{{ session['room'] }}", "{{ session['player_room'] }}")
         socket.emit('player_update','{{session["nickname"]}}', "{{ session['room'] }}", 'join');
         
+
         socket.on('data_update', function(data) {
             console.log(data)
             var players = data.players;
@@ -22,6 +23,7 @@
             generate_players_counter(players);
             generate_players(players, owner);
             toggleStyle(players,owner);
+            acknowledge(data)
 
         })
 
@@ -32,12 +34,17 @@
             var points2win = data.p2w;
             var roundTime = data.rt;
             var cardsPerP = data.cpp;
+            var acknowledgement_id = data.acknowledgement_id
             generate_settings(points2win,roundTime,cardsPerP)
+            acknowledge(data)
+
         })
 
+        
+
         $('#game-code').click(function() {
-            var content = $('#game-code').text();
-            copyToClipboard(content);
+            var gamecode = "{{session['room']}}"
+            copyToClipboard(gamecode);
         });
         
         $('.arrow-button').click(function() {
@@ -65,7 +72,6 @@
     });
 
         $(window).on('beforeunload', function(){
-        //leave_lobby();
         });
     });
     function leave_lobby() {
@@ -78,6 +84,12 @@
     });
     }
 
+    function acknowledge(data) {
+            var acknowledgement_id = data.acknowledgement_id
+            console.log(acknowledgement_id)
+            socket.emit('acknowledge', acknowledgement_id)
+        }
+    
     function kickFromLobby(nickname) {
         gamecode = "{{ session['room'] }}"
 
@@ -90,6 +102,9 @@
         const container = document.getElementById('player-list-container');
         $('#playerCounter').val(playerCount);
     }
+
+
+
 
     function generate_players(players, owner) {
         var nickname = '{{ session["nickname"] }}';
