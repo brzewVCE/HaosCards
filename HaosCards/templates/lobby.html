@@ -84,7 +84,7 @@
             }
 
             if (selectedButton) {
-                $(selectedButton).removeClass('disabled-button');
+                // $(selectedButton).removeClass('disabled-button');
                 $(selectedButton).removeClass('selected-button');
             }
             
@@ -233,16 +233,21 @@
         var acknowledgement_id = Math.random().toString(36).substr(2, 9);
         data['acknowledgement_id'] = acknowledgement_id;
         acknowledgements[acknowledgement_id] = 'false';
-        while (attempts < attemptsLimit)  {
-            socket.emit(function_name, data);
-            attempts++;
-            setTimeout(function() {}, 1000);
-            if (acknowledgements[acknowledgement_id] === 'true') {
-                console.log('Acknowledgement received');
-                return;
-            }
-            
-        };
+        
+        var intervalId = setInterval(function() {
+        if (acknowledgements[acknowledgement_id] === 'true') {
+            console.log('Acknowledgement received');
+            clearInterval(intervalId);
+            return;
+        }
+        if (attempts >= attemptsLimit) {
+            console.log('Max attempts reached');
+            clearInterval(intervalId);
+            return;
+        }
+        socket.emit(function_name, data);
+        attempts++;
+    }, 100);
     }
 
     $( window ).resize(function() {
