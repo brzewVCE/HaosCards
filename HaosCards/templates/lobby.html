@@ -17,8 +17,9 @@
         console.log('{{session["nickname"]}}', "{{ session['room'] }}", "{{ session['player_room'] }}")
         socket.emit('player_update','{{session["nickname"]}}', "{{ session['room'] }}", 'join');
         
-        socket.on('acknowledge', function(acknowledgement) {
-            acknowledgements[acknowledgement.id] = acknowledgement;
+        socket.on('server_response', function(data) {
+            var acknowledgement_id = data.acknowledgement_id;
+            acknowledgements[acknowledgement_id] = true;
         });
 
         socket.on('data_update', function(data) {
@@ -28,7 +29,7 @@
             generate_players_counter(players);
             generate_players(players, owner);
             toggleStyle(players,owner);
-            acknowledge(data)
+            client_response(data)
 
         })
 
@@ -44,7 +45,7 @@
             var cardsPerP = data.cpp;
             var acknowledgement_id = data.acknowledgement_id
             generate_settings(points2win,roundTime,cardsPerP)
-            acknowledge(data)
+            client_response(data)
 
         })
 
@@ -69,9 +70,9 @@
             }
 
             if (action === '+' && currentValue < maxValue) {
-                socket.emit('change_settings', gamecode, action, target);
+                socket.emit('change_settings', action, target);
             } else if (action === '-' && currentValue > minValue) {
-                socket.emit('change_settings', gamecode, action, target);
+                socket.emit('change_settings', action, target);
             } else {
                 $(this).addClass('disabled-button');
             }
@@ -92,10 +93,10 @@
     });
     }
 
-    function acknowledge(data) {
+    function client_response(data) {
             var acknowledgement_id = data.acknowledgement_id
             console.log(acknowledgement_id)
-            socket.emit('acknowledge', acknowledgement_id)
+            socket.emit('client_response', acknowledgement_id)
         }
     
     function kickFromLobby(nickname) {
@@ -203,16 +204,18 @@
         }
     
     }
-    function send_data(function_name, data, gamecode) {
+    function send_data(function_name, data) {
         var attempts = 0;
         var player_room = "{{ session['player_room'] }}";
+        var gamecode = "{{ session['room'] }}";
+        var nickname = "{{ session['nickname'] }}";
         var acknowledgement_id = Math.random().toString(36).substr(2, 9);
         var sendAndAwaitAcknowledgement = function() {
         return new Promise(function(resolve, reject) {
-            socket.emit(function_name, data, gamecode, acknowledgement_id);
+            socket.emit(function_name, data, acknowledgement_id);
             
             var interval = setInterval(function() {
-                if (acknowledgements[acknowledgement_id]) {
+                if (acknowledgements[acknowledgement_id] == false) {
                     resolve(acknowledgements[acknowledgement_id]);
                     clearInterval(interval);
                 } else if (attempts >= attemptsLimit) {

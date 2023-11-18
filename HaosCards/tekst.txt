@@ -10,3 +10,7 @@ karty sql zajbeac z pretendyouarexyz
 niech sie upewnia ze dostalo dane js>Python
 
 tryby gry (cards against humanity,)
+mam juz chyba ok w JS, teraz dodac funkcje ack i na koncu kazdego odbioru wołać
+zobaczyc co faktycznbie potrzebuja ack
+z kazdej funkcji wyjebac gamecode, moj ack juz to robi
+w czesci python pousuwac gamecode,unique room itd na rzecz session
