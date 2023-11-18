@@ -7,21 +7,21 @@
     <script type="text/javascript" charset="utf-8">
     
     var socket;
+    var PlayersDatabase = null;
+    var selectedButton = null;
+    var acknowledgements = {};
     $(document).ready(function() {
         socket = io.connect('http://' + document.domain + ':' + location.port+'/');
-        var acknowledgements = {};
-        var attemptsLimit = 50;
-        var PlayersDatabase = null;
-        var selectedButton = null;
+        
         console.log('Connection established');
         console.log('{{session["nickname"]}}', "{{ session['room'] }}", "{{ session['player_room'] }}")
         socket.emit('player_update','{{session["nickname"]}}', "{{ session['room'] }}", 'join');
         
         socket.on('server_response', function(data) {
             var acknowledgement_id = data.acknowledgement_id;
-            acknowledgements[acknowledgement_id] = true;
+            console.log('Received ack_id:', acknowledgement_id);
+            return acknowledgements[acknowledgement_id] = "true";
         });
-
         socket.on('data_update', function(data) {
             console.log(data)
             var players = data.players;
@@ -57,24 +57,45 @@
         });
         
         $('.arrow-button').click(function() {
-            var action = $(this).data('action'); // Get the action (+ or -)
+            var action = parseInt($(this).data('action')); // Get the action (+ or -)
             var target = $(this).data('target'); // Get the target (e.g., round time)
-            var minValue = $(this).data('min');
-            var maxValue = $(this).data('max');
-            var currentValue = parseFloat($('#'+target).text());
+            var minValue = parseInt($(this).data('min'));
+            var maxValue = parseInt($(this).data('max'));
+            var currentValue = parseInt($('#'+target).text());
             var gamecode = "{{session['room']}}"
+            var value = currentValue + action;
+            var changeValue = Math.abs(action);
+            
+            // Find the buttons related to the current target
+            var relatedButtons = $('.arrow-button[data-target="' + target + '"]');
+            var plusButton = relatedButtons.filter('[data-action="'+(changeValue)+'"]');
+            var minusButton = relatedButtons.filter('[data-action="'+(-1*changeValue)+'"]');
+
+            // Enable/disable the buttons
+            if (value <= minValue) {
+                $(minusButton).addClass('disabled-button');
+            } else {
+                $(minusButton).removeClass('disabled-button');
+            }
+            if (value >= maxValue) {
+                $(plusButton).addClass('disabled-button');
+            } else {
+                $(plusButton).removeClass('disabled-button');
+            }
 
             if (selectedButton) {
                 $(selectedButton).removeClass('disabled-button');
                 $(selectedButton).removeClass('selected-button');
             }
+            
+            if (value >= minValue && value <= maxValue) {
+                var data = {
+                    'target': target,
+                    'value': value
+                }
 
-            if (action === '+' && currentValue < maxValue) {
-                socket.emit('change_settings', action, target);
-            } else if (action === '-' && currentValue > minValue) {
-                socket.emit('change_settings', action, target);
-            } else {
-                $(this).addClass('disabled-button');
+                send_data('change_settings', data, acknowledgements)
+                
             }
             selectedButton = this;
             $(selectedButton).addClass('selected-button');
@@ -158,6 +179,8 @@
         $('#cpp').text(cpp);
     }
 
+    
+
     function copyToClipboard(text) {
         var input = document.createElement('textarea');
         input.value = text;
@@ -204,38 +227,24 @@
         }
     
     }
-    function send_data(function_name, data) {
+    function send_data(function_name, data, acknowledgements) {
         var attempts = 0;
-        var player_room = "{{ session['player_room'] }}";
-        var gamecode = "{{ session['room'] }}";
-        var nickname = "{{ session['nickname'] }}";
+        var attemptsLimit = 50;
         var acknowledgement_id = Math.random().toString(36).substr(2, 9);
-        var sendAndAwaitAcknowledgement = function() {
-        return new Promise(function(resolve, reject) {
-            socket.emit(function_name, data, acknowledgement_id);
+        data['acknowledgement_id'] = acknowledgement_id;
+        acknowledgements[acknowledgement_id] = 'false';
+        while (attempts < attemptsLimit)  {
+            socket.emit(function_name, data);
+            attempts++;
+            setTimeout(function() {}, 1000);
+            if (acknowledgements[acknowledgement_id] === 'true') {
+                console.log('Acknowledgement received');
+                return;
+            }
             
-            var interval = setInterval(function() {
-                if (acknowledgements[acknowledgement_id] == false) {
-                    resolve(acknowledgements[acknowledgement_id]);
-                    clearInterval(interval);
-                } else if (attempts >= attemptsLimit) {
-                    reject('No acknowledgement received');
-                    clearInterval(interval);
-                }
-                attempts++;
-            }, 100);
-        });
-    };
-
-    sendAndAwaitAcknowledgement().then(function(acknowledgement) {
-        console.log('Acknowledgement received:', acknowledgement);
-    }).catch(function(error) {
-        console.log('Error:', error);
-        if (attempts < attemptsLimit) {
-            sendAndAwaitAcknowledgement();
-        }
-    });
+        };
     }
+
     $( window ).resize(function() {
         $(".content").addClass("mobile")
     });
@@ -261,25 +270,25 @@
                     <div class="entry">
                         <span class="text">Points to win:</span>
                         <div class="input-container">
-                            <div class="arrow-button" data-action="-" data-target="p2w" data-min="5" data-max="20">-</div>
+                            <div class="arrow-button" data-action="-1" data-target="p2w" data-min="5" data-max="20">-</div>
                             <div class="value"><span id="p2w">0</span></div>
-                            <div class="arrow-button" data-action="+" data-target="p2w" data-min="5" data-max="20">+</div>
+                            <div class="arrow-button" data-action="+1" data-target="p2w" data-min="5" data-max="20">+</div>
                         </div>
                     </div>
                     <div class="entry">
                         <span class="text">Round Time:</span>
                         <div class="input-container">
-                            <div class="arrow-button" data-action="-" data-target="rt" data-min="10" data-max="60">-</div>
+                            <div class="arrow-button" data-action="-5" data-target="rt" data-min="10" data-max="60">-</div>
                             <div class="value"><span id="rt">0</span>s</div>
-                            <div class="arrow-button" data-action="+" data-target="rt" data-min="10" data-max="60">+</div>
+                            <div class="arrow-button" data-action="+5" data-target="rt" data-min="10" data-max="60">+</div>
                         </div>
                     </div>
                     <div class="entry">
                         <span class="text">Cards at hand:</span>
                         <div class="input-container">
-                            <div class="arrow-button" data-action="-" data-target="cpp" data-min="5" data-max="12">-</div>
+                            <div class="arrow-button" data-action="-1" data-target="cpp" data-min="5" data-max="12">-</div>
                             <div class="value"><span id="cpp">0</span></div>
-                            <div class="arrow-button" data-action="+" data-target="cpp" data-min="5" data-max="12">+</div>
+                            <div class="arrow-button" data-action="+1" data-target="cpp" data-min="5" data-max="12">+</div>
                         </div>
                     </div>
                 </div>

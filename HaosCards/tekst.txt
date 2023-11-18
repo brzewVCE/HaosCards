@@ -14,3 +14,8 @@ mam juz chyba ok w JS, teraz dodac funkcje ack i na koncu kazdego odbioru woÅ‚aÄ
 zobaczyc co faktycznbie potrzebuja ack
 z kazdej funkcji wyjebac gamecode, moj ack juz to robi
 w czesci python pousuwac gamecode,unique room itd na rzecz session
+var player_room = "{{ session['player_room'] }}";
+var gamecode = "{{ session['room'] }}";
+var nickname = "{{ session['nickname'] }}";
+mechanizm acknowledgement nie dziala w JS, zawsze wysyla 50
+disable przelozyc to style toggle ??

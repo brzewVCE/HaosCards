@@ -114,21 +114,16 @@ def register_events(socketio):
         send_data("settings_data", settings, gamecode)
        
     @socketio.on('change_settings')
-    def change_settings(action, target):
+    def change_settings(data):
+        value = data['value']
+        target = data['target']
         gamecode = session['room']
         if gamecode not in lobbies:
             return print_error(f"Gamecode {gamecode} not found")
         settings = lobbies[gamecode].settings
-        if target != 'rt':
-            x=1
-        else:
-            x=5
-        if action == '+':
-            settings[target] += x
-        else:
-            settings[target] -= x
+        settings[target] = value
         send_data('settings_data', settings, gamecode)
-        server_response('settings_changed')
+        server_response(data)
 
     def send_data(function_name, data, gamecode):
         attempts = 0
@@ -155,8 +150,11 @@ def register_events(socketio):
     @socketio.on('client_response')
     def client_response(id):
         acknowledgements[id] = True
-        print_info(f"ACKNOWLEDGED {id}")
+        nickname = session['nickname']
+        room = session['player_room']
+        print_info(f"{nickname} acknowledged newest data {id} ")
     
-    def server_response(id):
-        emit('server_response', id, to=session['player_room'])
-
+    def server_response(data):
+        acknowledgement_id = data['acknowledgement_id']
+        emit('server_response', {'acknowledgement_id' : acknowledgement_id}, to=session['player_room'])
+        print_info(f'server response {acknowledgement_id} sent to {session["nickname"]} in {session["player_room"]}')
