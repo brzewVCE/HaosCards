@@ -59,7 +59,9 @@ def register_events(socketio):
         print_info(f'{str(new_player)}')
 
     @socketio.on('player_update')
-    def player_update(nickname, gamecode, action):
+    def player_update(action):
+        nickname = session['nickname']
+        gamecode = session['room']
         if gamecode not in lobbies:
             return print_error(f"Gamecode {gamecode} not found")
         if action == 'join':
@@ -89,7 +91,7 @@ def register_events(socketio):
         print(f'All lobbies: {str(lobbies)}')
         data_update(gamecode)
 
-
+    
     def leave_lobby(gamecode, nickname):
         unique_room = session['player_room']
         leave_room(unique_room)
@@ -141,7 +143,7 @@ def register_events(socketio):
             while acknowledgements[acknowledgement_id] != True and attempts < attempts_limit:
                 emit(function_name, data, to=player_room)
                 print_info(f"Sent {function_name} to {player_room}")
-                eventlet.sleep(0.1)
+                eventlet.sleep(0.12)
                 attempts += 1
             if attempts == attempts_limit:
                 print_error(f"Failed to receive acknowledgement for {acknowledgement_id}")

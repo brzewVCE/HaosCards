@@ -14,12 +14,16 @@
         socket = io.connect('http://' + document.domain + ':' + location.port+'/');
         
         console.log('Connection established');
-        console.log('{{session["nickname"]}}', "{{ session['room'] }}", "{{ session['player_room'] }}")
-        socket.emit('player_update','{{session["nickname"]}}', "{{ session['room'] }}", 'join');
+        console.log('{{session["nickname"]}}', 
+                    "{{ session['room'] }}",
+                    "{{ session['player_room'] }}")
+
+        socket.emit('player_update', 
+                    'join');
         
         socket.on('server_response', function(data) {
             var acknowledgement_id = data.acknowledgement_id;
-            console.log('Received ack_id:', acknowledgement_id);
+            console.log('Received server response: ', acknowledgement_id);
             return acknowledgements[acknowledgement_id] = "true";
         });
         socket.on('data_update', function(data) {
@@ -33,7 +37,8 @@
 
         })
 
-        socket.emit('request_settings', "{{ session['room'] }}")
+        socket.emit('request_settings', 
+                    "{{ session['room'] }}")
         
 
         
@@ -116,7 +121,7 @@
 
     function client_response(data) {
             var acknowledgement_id = data.acknowledgement_id
-            console.log(acknowledgement_id)
+            console.log('client_response: ',acknowledgement_id)
             socket.emit('client_response', acknowledgement_id)
         }
     
@@ -235,19 +240,24 @@
         acknowledgements[acknowledgement_id] = 'false';
         
         var intervalId = setInterval(function() {
-        if (acknowledgements[acknowledgement_id] === 'true') {
-            console.log('Acknowledgement received');
-            clearInterval(intervalId);
-            return;
-        }
         if (attempts >= attemptsLimit) {
             console.log('Max attempts reached');
             clearInterval(intervalId);
             return;
         }
+        if (acknowledgements[acknowledgement_id] === 'true') {
+            console.log('Acknowledgement received');
+            clearInterval(intervalId);
+            return;
+        }
         socket.emit(function_name, data);
         attempts++;
-    }, 100);
+        if (acknowledgements[acknowledgement_id] === 'true') {
+            console.log('Acknowledgement received');
+            clearInterval(intervalId);
+            return;
+        }
+    }, 150);
     }
 
     $( window ).resize(function() {
