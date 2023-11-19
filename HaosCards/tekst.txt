@@ -7,6 +7,8 @@ po rundzie sie pokazuja punkty
 niech sprawdza długość nicku
 client z pythona sztuczny
 karty sql zajbeac z pretendyouarexyz
-niech sie upewnia ze dostalo dane js>Python
 
 tryby gry (cards against humanity,)
+kick gracza mu daje leave_lobby
+disable przelozyc to style toggle ??
+dodac bug report, poprawic output o date (dekorator funckja log)

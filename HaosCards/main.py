@@ -14,9 +14,8 @@ Session(app)
 
 socketio = SocketIO(app, manage_session=False, async_mode = 'eventlet')
 
-register_events(socketio) # Add this line after initializing socketio
-                            
-                            #STRONY
+register_events(socketio)
+                                 
 @app.route('/', methods=['GET','POST'])
 def home():
     if session.get('room') in lobbies and session.get('nickname') is not None:

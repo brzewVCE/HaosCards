@@ -7,15 +7,25 @@
     <script type="text/javascript" charset="utf-8">
     
     var socket;
+    var PlayersDatabase = null;
+    var selectedButton = null;
+    var acknowledgements = {};
     $(document).ready(function() {
         socket = io.connect('http://' + document.domain + ':' + location.port+'/');
-        var PlayersDatabase = null;
-        var selectedButton = null;
-        console.log('Connection established');
-        console.log('{{session["nickname"]}}', "{{ session['room'] }}", "{{ session['player_room'] }}")
-        socket.emit('player_update','{{session["nickname"]}}', "{{ session['room'] }}", 'join');
         
+        console.log('Connection established');
+        console.log('{{session["nickname"]}}', 
+                    "{{ session['room'] }}",
+                    "{{ session['player_room'] }}")
 
+        socket.emit('player_update', 
+                    'join');
+        
+        socket.on('server_response', function(data) {
+            var acknowledgement_id = data.acknowledgement_id;
+            console.log('Received server response: ', acknowledgement_id);
+            return acknowledgements[acknowledgement_id] = "true";
+        });
         socket.on('data_update', function(data) {
             console.log(data)
             var players = data.players;
@@ -23,11 +33,15 @@
             generate_players_counter(players);
             generate_players(players, owner);
             toggleStyle(players,owner);
-            acknowledge(data)
+            client_response(data)
 
         })
 
-        socket.emit('request_settings', "{{ session['room'] }}")
+        socket.emit('request_settings', 
+                    "{{ session['room'] }}")
+        
+
+        
 
         socket.on('settings_data', function(data) {
             console.log(data)
@@ -36,7 +50,7 @@
             var cardsPerP = data.cpp;
             var acknowledgement_id = data.acknowledgement_id
             generate_settings(points2win,roundTime,cardsPerP)
-            acknowledge(data)
+            client_response(data)
 
         })
 
@@ -48,24 +62,45 @@
         });
         
         $('.arrow-button').click(function() {
-            var action = $(this).data('action'); // Get the action (+ or -)
+            var action = parseInt($(this).data('action')); // Get the action (+ or -)
             var target = $(this).data('target'); // Get the target (e.g., round time)
-            var minValue = $(this).data('min');
-            var maxValue = $(this).data('max');
-            var currentValue = parseFloat($('#'+target).text());
+            var minValue = parseInt($(this).data('min'));
+            var maxValue = parseInt($(this).data('max'));
+            var currentValue = parseInt($('#'+target).text());
             var gamecode = "{{session['room']}}"
+            var value = currentValue + action;
+            var changeValue = Math.abs(action);
+            
+            // Find the buttons related to the current target
+            var relatedButtons = $('.arrow-button[data-target="' + target + '"]');
+            var plusButton = relatedButtons.filter('[data-action="'+(changeValue)+'"]');
+            var minusButton = relatedButtons.filter('[data-action="'+(-1*changeValue)+'"]');
 
-            if (selectedButton) {
-                $(selectedButton).removeClass('disabled-button');
-                $(selectedButton).removeClass('selected-button');
+            // Enable/disable the buttons
+            if (value <= minValue) {
+                $(minusButton).addClass('disabled-button');
+            } else {
+                $(minusButton).removeClass('disabled-button');
+            }
+            if (value >= maxValue) {
+                $(plusButton).addClass('disabled-button');
+            } else {
+                $(plusButton).removeClass('disabled-button');
             }
 
-            if (action === '+' && currentValue < maxValue) {
-                socket.emit('change_settings', gamecode, action, target);
-            } else if (action === '-' && currentValue > minValue) {
-                socket.emit('change_settings', gamecode, action, target);
-            } else {
-                $(this).addClass('disabled-button');
+            if (selectedButton) {
+                // $(selectedButton).removeClass('disabled-button');
+                $(selectedButton).removeClass('selected-button');
+            }
+            
+            if (value >= minValue && value <= maxValue) {
+                var data = {
+                    'target': target,
+                    'value': value
+                }
+
+                send_data('change_settings', data, acknowledgements)
+                
             }
             selectedButton = this;
             $(selectedButton).addClass('selected-button');
@@ -84,10 +119,10 @@
     });
     }
 
-    function acknowledge(data) {
+    function client_response(data) {
             var acknowledgement_id = data.acknowledgement_id
-            console.log(acknowledgement_id)
-            socket.emit('acknowledge', acknowledgement_id)
+            console.log('client_response: ',acknowledgement_id)
+            socket.emit('client_response', acknowledgement_id)
         }
     
     function kickFromLobby(nickname) {
@@ -149,6 +184,8 @@
         $('#cpp').text(cpp);
     }
 
+    
+
     function copyToClipboard(text) {
         var input = document.createElement('textarea');
         input.value = text;
@@ -166,7 +203,6 @@
         var changeArrows = document.getElementsByClassName('arrow-button')
         var startButton = document.getElementById('start-button');
 
-        // Reset styles for all elements
         for (var i = 0; i < kickButtons.length; i++) {
             kickButtons[i].classList.remove('hidden');
         }
@@ -194,13 +230,40 @@
         if (players.length < 3){
             startButton.classList.add('disabled-button');
         }
-        //przyciski zwiekszanie zmniejszanie
+    
     }
-
+    function send_data(function_name, data, acknowledgements) {
+        var attempts = 0;
+        var attemptsLimit = 50;
+        var acknowledgement_id = Math.random().toString(36).substr(2, 9);
+        data['acknowledgement_id'] = acknowledgement_id;
+        acknowledgements[acknowledgement_id] = 'false';
+        
+        var intervalId = setInterval(function() {
+        if (attempts >= attemptsLimit) {
+            console.log('Max attempts reached');
+            clearInterval(intervalId);
+            return;
+        }
+        if (acknowledgements[acknowledgement_id] === 'true') {
+            console.log('Acknowledgement received');
+            clearInterval(intervalId);
+            return;
+        }
+        socket.emit(function_name, data);
+        attempts++;
+        if (acknowledgements[acknowledgement_id] === 'true') {
+            console.log('Acknowledgement received');
+            clearInterval(intervalId);
+            return;
+        }
+    }, 150);
+    }
 
     $( window ).resize(function() {
         $(".content").addClass("mobile")
     });
+    
     
     class Player {
     constructor(name) {
@@ -222,25 +285,25 @@
                     <div class="entry">
                         <span class="text">Points to win:</span>
                         <div class="input-container">
-                            <div class="arrow-button" data-action="-" data-target="p2w" data-min="5" data-max="20">-</div>
+                            <div class="arrow-button" data-action="-1" data-target="p2w" data-min="5" data-max="20">-</div>
                             <div class="value"><span id="p2w">0</span></div>
-                            <div class="arrow-button" data-action="+" data-target="p2w" data-min="5" data-max="20">+</div>
+                            <div class="arrow-button" data-action="+1" data-target="p2w" data-min="5" data-max="20">+</div>
                         </div>
                     </div>
                     <div class="entry">
                         <span class="text">Round Time:</span>
                         <div class="input-container">
-                            <div class="arrow-button" data-action="-" data-target="rt" data-min="10" data-max="60">-</div>
+                            <div class="arrow-button" data-action="-5" data-target="rt" data-min="10" data-max="60">-</div>
                             <div class="value"><span id="rt">0</span>s</div>
-                            <div class="arrow-button" data-action="+" data-target="rt" data-min="10" data-max="60">+</div>
+                            <div class="arrow-button" data-action="+5" data-target="rt" data-min="10" data-max="60">+</div>
                         </div>
                     </div>
                     <div class="entry">
                         <span class="text">Cards at hand:</span>
                         <div class="input-container">
-                            <div class="arrow-button" data-action="-" data-target="cpp" data-min="5" data-max="12">-</div>
+                            <div class="arrow-button" data-action="-1" data-target="cpp" data-min="5" data-max="12">-</div>
                             <div class="value"><span id="cpp">0</span></div>
-                            <div class="arrow-button" data-action="+" data-target="cpp" data-min="5" data-max="12">+</div>
+                            <div class="arrow-button" data-action="+1" data-target="cpp" data-min="5" data-max="12">+</div>
                         </div>
                     </div>
                 </div>

@@ -1,0 +1,107 @@
+﻿body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+}
+
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: url('static/HelveticaNeue.woff2') format('woff2'), /* Modern Browsers */
+        url('static/HelveticaNeue.woff') format('woff'); /* Older Browsers */
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+@keyframes wave {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+#welcome-text {
+    color:#007BFF;
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    animation: wave 2s infinite linear;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    
+}
+
+
+#nickname {
+    width: 300px;
+    height: 40px;
+    font-size: 16px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+#nickname:focus {
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+#joinButton {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+    
+}
+
+#createButton {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+
+input[type="number"] {
+    padding: 10px; 
+    border: 1px solid #ccc;
+    border-radius: 5px; 
+    font-size: 16px; 
+    width: 200px; 
+    background-color: #f7f7f7; 
+    color: #333; 
+}
+
+
+input[type="number"]:focus {
+outline: none;
+border-color: #007BFF;
+box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
