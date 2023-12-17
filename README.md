@@ -5,6 +5,7 @@ Welcome to HaosCards, a clone of the popular party game Cards Against Humanity. 
 ## Features
 
 - A working lobby system for seamless multiplayer experience.
+- Acknowledgement with unique id for each packet
 
 ## To-Do List
 
