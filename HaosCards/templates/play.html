@@ -84,23 +84,36 @@ html, body {
     border-radius: 5px;
     font-size: 1.2rem;
     width: 10vw;
+    min-width: 100px;
     display: flex;
     flex-direction: column;
-    justify-content: left;
     align-items: left;
+    max-height: 40vw;
+    overflow: auto;
 }
 
 .scoreboardEntry {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 5px;
+
 }
 
 .scoreboardName {
-    overflow-wrap: break-word;
+    justify-content: left;
+    white-space: nowrap;
+    flex: 1 0 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 70%;
 }
 
 .scoreboardScore {
     font-weight: bold;
+    justify-content: center;
+    white-space: nowrap;
 }   
 
 
@@ -200,9 +213,42 @@ html, body {
         <div class="leftSide">
             <div id="scoreboard">
                 <div class="scoreboardEntry">
-                    <div class="scoreboardName">Name</div>
-                    <div class="scoreboardScore">Score</div>
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
                 </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                
             </div>
         </div>
         <div class="body">
