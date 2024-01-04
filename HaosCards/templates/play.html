@@ -84,7 +84,24 @@ html, body {
     border-radius: 5px;
     font-size: 1.2rem;
     width: 10vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: left;
 }
+
+.scoreboardEntry {
+    display: flex;
+    justify-content: space-between;
+}
+
+.scoreboardName {
+    overflow-wrap: break-word;
+}
+
+.scoreboardScore {
+    font-weight: bold;
+}   
 
 
 #timer {
@@ -182,7 +199,10 @@ html, body {
         </div>
         <div class="leftSide">
             <div id="scoreboard">
-                Kuba i chuj, bardzo długi tekst alalalallalalalallala
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Name</div>
+                    <div class="scoreboardScore">Score</div>
+                </div>
             </div>
         </div>
         <div class="body">
