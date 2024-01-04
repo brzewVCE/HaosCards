@@ -10,6 +10,7 @@ Welcome to HaosCards, a clone of the popular party game Cards Against Humanity. 
 ## To-Do List
 
 - Implement card gameplay.
+- Adding custom cards to lobby
 - Implement visual improvements for a better user experience.
 
 ## Requirements
