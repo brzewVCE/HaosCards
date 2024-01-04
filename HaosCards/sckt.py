@@ -147,7 +147,7 @@ def register_events(socketio):
                 attempts += 1
             if attempts == attempts_limit:
                 print_error(f"Failed to receive acknowledgement for {acknowledgement_id}")
-                leave_lobby(gamecode, session['nickname'])
+                leave_lobby(gamecode, player.name)
 
     @socketio.on('client_response')
     def client_response(id):
