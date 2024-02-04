@@ -37,6 +37,11 @@
 
         })
 
+        socket.on("kicked", function(data) {
+            console.log("You have been kicked from the lobby.")
+            leave_lobby();
+        })
+
         socket.emit('request_settings', 
                     "{{ session['room'] }}")
         
@@ -116,7 +121,7 @@
         socket.emit('player_update', 'leave', function() {
             socket.disconnect();
             window.location.href = "{{ url_for('home') }}";
-    });
+        });
     }
 
     function client_response(data) {
@@ -124,11 +129,7 @@
             console.log('client_response: ',acknowledgement_id)
             socket.emit('client_response', acknowledgement_id)
         }
-    
-    function kickFromLobby(nickname) {
-        gamecode = "{{ session['room'] }}"
 
-    }
 
     function generate_players_counter(players) {
         var playerCount = players.length;
@@ -142,7 +143,6 @@
 
 
     function generate_players(players, owner) {
-        var nickname = '{{ session["nickname"] }}';
         const container = document.getElementById('player-list-container');
 
         container.innerHTML = '';
@@ -164,9 +164,10 @@
                 kickButton.innerHTML = 'Kick';
 
                 kickButton.addEventListener('click', () => {
-
-                console.log(`Kicking ${player}`);
-            });
+                    var nickname = `${player}`;
+                    console.log(`Kicking ${player} from the lobby.`);
+                    socket.emit('kick_player', nickname);
+                });
                 playerElement.appendChild(kickButton);
             } else {
                 const ownerButton = document.createElement('button');

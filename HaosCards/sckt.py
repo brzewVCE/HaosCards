@@ -99,6 +99,23 @@ def register_events(socketio):
         session.clear()
         print(f'{nickname} left {gamecode}')
 
+    @socketio.on('kick_player')
+    def kick_player(nickname):
+        gamecode = session['room']
+        if gamecode not in lobbies:
+            return print_error(f"Gamecode {gamecode} not found")
+        if session['nickname'] != lobbies[gamecode].owner:
+            return print_error(f"{session['nickname']} is not the owner of {gamecode}")
+        if nickname in lobbies[gamecode].players:
+            player = [player for player in lobbies[gamecode].player_data if player.name == nickname][0]
+            lobbies[gamecode].player_data.remove(player)
+            lobbies[gamecode].players.remove(nickname)
+            data_update(gamecode)
+            print(f'{nickname} was kicked from {gamecode}')
+            return emit('kicked', to=player.unique_room)
+        else:
+            print_error(f'{nickname} not found in {gamecode}')
+
     @socketio.on('get_data')
     def get_data(gamecode):
         data_update(gamecode)
