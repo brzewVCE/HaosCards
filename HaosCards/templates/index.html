@@ -12,6 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf-8">
         var socket;
+        var max_length = 12;
         $(document).ready(function(){
             socket = io.connect('http://' + document.domain + ':' + location.port+'/');
             window.addEventListener('pageshow', (event) => {
@@ -41,11 +42,15 @@
         
         async function validateGameCode() {
             nickname = $('#nickname').val()
+            gamecode = $('#numberInput').val();
             if(nickname == '') {
                 $('#warning').text('Enter a nickname')
                 return false;
             }
-            gamecode = $('#numberInput').val();
+            if (nickname.length > max_length) {
+                $('#warning').text('Nickname cannot be longer than ' + max_length + ' characters!');
+                return false;
+            }
             if(/^\d{6}$/.test(gamecode)) {
                 await socket.emit('validate_game_code', gamecode, nickname)
                 console.log('Sent game code for validation:', gamecode);
@@ -60,6 +65,10 @@
             const gamecode = generateRandomString(6);
             if(nickname=='') {
                 $('#warning').text('Enter a nickname')
+                return false;
+            }
+            if (nickname.length > max_length) {
+                $('#warning').text('Nickname cannot be longer than ' + max_length + ' characters!');
                 return false;
             }
             else {
@@ -79,6 +88,14 @@
             }
             return result;
         }
+        function checkLength(input) {
+        var warning = document.getElementById('warning');
+        if (input.value.length == max_length) {
+            warning.textContent = 'Nickname cannot be longer than ' + max_length + ' characters!';
+        } else {
+            warning.textContent = '';
+        }
+}
     </script>
     <link href="{{ url_for('get_static_file', filename='indexStyle.css') }}" rel="stylesheet" type="text/css" >
 </head>
@@ -86,7 +103,7 @@
 <body>
     <div class="container">
         <h1 title="Haos Cards" id="welcome-text">Haos Cards</h1>
-            <input type="text" id="nickname" placeholder="Enter your nickname" name="nickname" required>
+            <input type="text" id="nickname" placeholder="Enter your nickname" name="nickname" oninput="checkLength(this)" maxlength="12" required>
             <br>
             <button type="button" name="action" value="create" id="createButton" onclick='createLobby()'>Create Game</button>
             <button type="button" name="action" value="join" id="joinButton" onclick="validateGameCode()">Join Game</button>

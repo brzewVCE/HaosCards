@@ -12,6 +12,7 @@ import uuid
 lobbies={}
 games={}
 acknowledgements = {}
+nickname_max_len = 12
 
 def register_events(socketio):
 
@@ -64,6 +65,8 @@ def register_events(socketio):
         gamecode = session['room']
         if gamecode not in lobbies:
             return print_error(f"Gamecode {gamecode} not found")
+        if len(nickname) > nickname_max_len:
+            return print_error(f"Nickname {nickname} too long")
         if action == 'join':
             join_room(gamecode)
             join_room(session['player_room'])
