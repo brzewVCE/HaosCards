@@ -29,6 +29,8 @@ def register_events(socketio):
 
     @socketio.on('create_lobby')
     def create_lobby(nickname, gamecode):
+        if len(nickname) > nickname_max_len:
+            return print_error(f"Nickname {nickname} too long")
         session['nickname'] = nickname
         session['room'] = gamecode
         new_lobby = Lobby(gamecode=gamecode)
@@ -44,6 +46,8 @@ def register_events(socketio):
     def join(nickname, gamecode):
         if gamecode not in lobbies:
             return print_error(f"Gamecode {gamecode} not found")
+        if len(nickname) > nickname_max_len:
+            return print_error(f"Nickname {nickname} too long")
         session['nickname'] = nickname
         session['room'] = gamecode
         player_room = str(uuid.uuid4())
