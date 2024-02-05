@@ -115,9 +115,9 @@ def register_events(socketio):
         if session['nickname'] != lobbies[gamecode].owner:
             return print_error(f"{session['nickname']} is not the owner of {gamecode}")
         if nickname in lobbies[gamecode].players:
-            player = [player for player in lobbies[gamecode].player_data if player.name == nickname][0]
-            emit('kicked', to=player.unique_room)
-            print(f'{nickname} was kicked from {gamecode}')
+            data = {'nickname': nickname}
+            send_data('kicked', data, gamecode)
+            print_warning(f'{nickname} was kicked from {gamecode}')
             return data_update(gamecode)
         else:
             print_error(f'{nickname} not found in {gamecode}')
