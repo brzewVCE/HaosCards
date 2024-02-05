@@ -131,10 +131,10 @@ def register_events(socketio):
             return print_error(f"{session['nickname']} is not the owner of {gamecode}")
         if len(lobbies[gamecode].players) < min_players:
             return print_error(f"Not enough players in {gamecode}")
-        # game = Game(gamecode)
-        # games[gamecode] = game
-        # game.start()
-        print(f'Game {gamecode} started')
+        settings = lobbies[gamecode].settings
+        new_game = Game(gamecode, settings['p2w'], settings['rt'], settings['cpp'], lobbies[gamecode].players)
+        games[gamecode] = new_game
+        print_error(f"{str(new_game)}")       
         send_data('game_started', {}, gamecode)
         print(f'All lobbies: {str(lobbies)}')
 
