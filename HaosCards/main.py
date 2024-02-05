@@ -30,7 +30,7 @@ def home():
 
 @app.route('/play', methods=['GET','POST'])
 def play():
-    if session.get('room') in games:
+    if True: #session.get('room') in games:
         return render_template('play.html', session=session)
     else:
         return redirect(url_for('home'))
