@@ -18,6 +18,9 @@ register_events(socketio)
                                  
 @app.route('/', methods=['GET','POST'])
 def home():
+    if session.get('room') in games and session.get('nickname') is not None:
+        print(f"Returned player to {session.get('room')}")
+        return redirect(url_for('play'))
     if session.get('room') in lobbies and session.get('nickname') is not None:
         print(f"Returned player to {session.get('room')}")
         return redirect(url_for('lobby'))
@@ -37,7 +40,11 @@ def play():
 
 @app.route('/lobby', methods=['GET','POST'])
 def lobby():
-    if session.get('room') not in lobbies:
+    if session.get('room') in games:
+        return redirect(url_for('play'))
+    if session.get('room') in lobbies:
+        return render_template('lobby.html', session=session)
+    else:
         return redirect(url_for('home'))
     
     return render_template('lobby.html', session=session)
