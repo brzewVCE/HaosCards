@@ -39,7 +39,6 @@
 
         socket.on("kicked", function(data) {
             console.log("You have been kicked from the lobby.")
-            var acknowledgement_id = data.acknowledgement_id
             client_response(data)
             leave_lobby();
         })
@@ -63,6 +62,7 @@
 
         socket.on('game_started', function(data) {
             console.log('Game started');
+            client_response(data)
             window.location.href = "{{ url_for('play') }}";
         })
         
