@@ -25,3 +25,9 @@ function send_data(function_name, data, acknowledgements) {
     }
 }, 150);
 }
+
+function client_response(data) {
+    var acknowledgement_id = data.acknowledgement_id
+    console.log('client_response: ',acknowledgement_id)
+    socket.emit('client_response', acknowledgement_id)
+}

@@ -2,6 +2,7 @@
 <html>
 <head>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <script src="{{ url_for('static', filename='ack.js') }}"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf-8">
@@ -130,11 +131,7 @@
         });
     }
 
-    function client_response(data) {
-            var acknowledgement_id = data.acknowledgement_id
-            console.log('client_response: ',acknowledgement_id)
-            socket.emit('client_response', acknowledgement_id)
-        }
+
 
 
     function generate_players_counter(players) {
@@ -239,33 +236,7 @@
         }
     
     }
-    function send_data(function_name, data, acknowledgements) {
-        var attempts = 0;
-        var attemptsLimit = 50;
-        var acknowledgement_id = Math.random().toString(36).substr(2, 9);
-        data['acknowledgement_id'] = acknowledgement_id;
-        acknowledgements[acknowledgement_id] = 'false';
-        
-        var intervalId = setInterval(function() {
-        if (attempts >= attemptsLimit) {
-            console.log('Max attempts reached');
-            clearInterval(intervalId);
-            return;
-        }
-        if (acknowledgements[acknowledgement_id] === 'true') {
-            console.log('Acknowledgement received');
-            clearInterval(intervalId);
-            return;
-        }
-        socket.emit(function_name, data);
-        attempts++;
-        if (acknowledgements[acknowledgement_id] === 'true') {
-            console.log('Acknowledgement received');
-            clearInterval(intervalId);
-            return;
-        }
-    }, 150);
-    }
+    
 
     function start_game() {
         console.log('Starting game');
