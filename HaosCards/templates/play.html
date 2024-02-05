@@ -1,6 +1,9 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
@@ -72,16 +75,45 @@ html, body {
 }
 
 #scoreboard {
-    position: absolute; /* Set the scoreboard to an absolute position within the leftSide container */
-    top: 10px; /* Adjust the top position as needed */
-    left: 10px; /* Adjust the left position as needed */
+    position: absolute;
+    left: 10px;
     background-color: #fff;
     padding: 10px;
     border: 2px solid #000;
     border-radius: 5px;
     font-size: 1.2rem;
     width: 10vw;
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    max-height: 40vw;
+    overflow: auto;
 }
+
+.scoreboardEntry {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 5px;
+
+}
+
+.scoreboardName {
+    justify-content: left;
+    white-space: nowrap;
+    flex: 1 0 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 70%;
+}
+
+.scoreboardScore {
+    font-weight: bold;
+    justify-content: center;
+    white-space: nowrap;
+}   
 
 
 #timer {
@@ -179,7 +211,43 @@ html, body {
         </div>
         <div class="leftSide">
             <div id="scoreboard">
-                Kuba i chuj, bardzo długi tekst alalalallalalalallala
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                <div class="scoreboardEntry">
+                    <div class="scoreboardName">Nameeeeeeeeeeeeeee</div>
+                    <div class="scoreboardScore">20</div>
+                </div>
+                
             </div>
         </div>
         <div class="body">

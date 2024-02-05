@@ -118,7 +118,7 @@
         nickname = "{{ session['nickname'] }}"
         gamecode = "{{ session['room'] }}"
         console.log(nickname," left the lobby");
-        socket.emit('player_update', 'leave', function() {
+        socket.emit('player_update','leave', function() {
             socket.disconnect();
             window.location.href = "{{ url_for('home') }}";
         });

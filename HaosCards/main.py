@@ -30,17 +30,17 @@ def home():
 
 @app.route('/play', methods=['GET','POST'])
 def play():
-    if session.get('room') in games:
-        return render_template('play.html', session=session)
-    else:
-        return redirect(url_for('home'))
+    # if session.get('room') not in games:
+    #     return redirect(url_for('home'))
+    
+    return render_template('play.html', session=session)
 
 @app.route('/lobby', methods=['GET','POST'])
 def lobby():
-    if session.get('room') in lobbies:
-        return render_template('lobby.html', session=session)
-    else:
+    if session.get('room') not in lobbies:
         return redirect(url_for('home'))
+    
+    return render_template('lobby.html', session=session)
 
 
 @app.route('/static/<path:filename>')
