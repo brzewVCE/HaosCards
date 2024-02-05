@@ -13,6 +13,7 @@ lobbies={}
 games={}
 acknowledgements = {}
 nickname_max_len = 12
+min_players = 2
 
 def register_events(socketio):
 
@@ -120,6 +121,22 @@ def register_events(socketio):
             return data_update(gamecode)
         else:
             print_error(f'{nickname} not found in {gamecode}')
+
+    @socketio.on('start_game')
+    def start_game(data):
+        gamecode = session['room']
+        if gamecode not in lobbies:
+            return print_error(f"Gamecode {gamecode} not found")
+        if session['nickname'] != lobbies[gamecode].owner:
+            return print_error(f"{session['nickname']} is not the owner of {gamecode}")
+        if len(lobbies[gamecode].players) < min_players:
+            return print_error(f"Not enough players in {gamecode}")
+        # game = Game(gamecode)
+        # games[gamecode] = game
+        # game.start()
+        print(f'Game {gamecode} started')
+        send_data('game_started', {}, gamecode)
+        print(f'All lobbies: {str(lobbies)}')
 
     @socketio.on('get_data')
     def get_data(gamecode):

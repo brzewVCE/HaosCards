@@ -1,33 +1,27 @@
-var acknowledgements = {};
-var attemptsLimit = 50;
-
-function send_data(function_name, data, gamecode) {
+function send_data(function_name, data, acknowledgements) {
     var attempts = 0;
-    var player_room = "{{ session['player_room'] }}";
+    var attemptsLimit = 50;
     var acknowledgement_id = Math.random().toString(36).substr(2, 9);
-    var sendAndAwaitAcknowledgement = function() {
-    return new Promise(function(resolve, reject) {
-        socket.emit(function_name, data, gamecode, acknowledgement_id);
-        
-        var interval = setInterval(function() {
-            if (acknowledgements[acknowledgement_id]) {
-                resolve(acknowledgements[acknowledgement_id]);
-                clearInterval(interval);
-            } else if (attempts >= attemptsLimit) {
-                reject('No acknowledgement received');
-                clearInterval(interval);
-            }
-            attempts++;
-        }, 100);
-    });
-};
-
-sendAndAwaitAcknowledgement().then(function(acknowledgement) {
-    console.log('Acknowledgement received:', acknowledgement);
-}).catch(function(error) {
-    console.log('Error:', error);
-    if (attempts < attemptsLimit) {
-        sendAndAwaitAcknowledgement();
+    data['acknowledgement_id'] = acknowledgement_id;
+    acknowledgements[acknowledgement_id] = 'false';
+    
+    var intervalId = setInterval(function() {
+    if (attempts >= attemptsLimit) {
+        console.log('Max attempts reached');
+        clearInterval(intervalId);
+        return;
     }
-});
+    if (acknowledgements[acknowledgement_id] === 'true') {
+        console.log('Acknowledgement received');
+        clearInterval(intervalId);
+        return;
+    }
+    socket.emit(function_name, data);
+    attempts++;
+    if (acknowledgements[acknowledgement_id] === 'true') {
+        console.log('Acknowledgement received');
+        clearInterval(intervalId);
+        return;
+    }
+}, 150);
 }
