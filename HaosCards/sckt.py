@@ -143,8 +143,8 @@ def register_events(socketio):
             black_cards_data = json.load(file)
         white_cards = white_cards_data['white_cards']
         black_cards = black_cards_data['black_cards']
-        print_error(f"White cards: {white_cards}")
-        print_error(f"Black cards: {black_cards}")
+        print_error(f"White cards: {len(white_cards)}")
+        print_error(f"Black cards: {len(black_cards)}")
         black_cards_dict = {i: card for i, card in enumerate(black_cards)}
         white_cards_dict = {i: card for i, card in enumerate(white_cards)}
         print_error(f"White cards: {white_cards_dict}")
