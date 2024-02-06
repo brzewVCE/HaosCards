@@ -137,6 +137,10 @@ html, body {
     margin: 5px;
     transition: transform 0.3s, box-shadow 0.3s;
 }
+.black_card:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
 
 .cardContainer {
     display: flex;
@@ -325,10 +329,21 @@ const button = document.getElementById("selectButton");
 button.onclick = onClickSelectButton;
 
 // Define an array of white card descriptions
-const white_cardsData = [];
+const white_cardsData = [
+    "white_card 1 Description",
+    "white_card 2 Description",
+    "white_card 3 Description",
+    "white_card 4 Description",
+    "white_card 5 Description",
+    "white_card 6 Description",
+    "white_card 7 Description",
+    "white_card 8 Description"
+];
 
 // Define an array of black card descriptions (currently contains "Test")
-const black_cardsData = [];
+const black_cardsData = [
+    "Test"
+];
 
 // Get the "whitecardContainer" and "blackcardContainer" elements from the document
 const white_cardContainer = document.getElementById("whitecardContainer");

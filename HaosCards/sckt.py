@@ -8,6 +8,7 @@ from color_print import print_info, print_error, print_warning
 import eventlet
 import random
 import uuid
+import os
 
 lobbies={}
 games={}
@@ -64,8 +65,8 @@ def register_events(socketio):
         print_error(f"{nickname}'s rooms: {rooms()}")
         print_info(f'{str(new_player)}')
 
-    @socketio.on('player_update')
-    def player_update(action):
+    @socketio.on('lobby_player_update')
+    def lobby_player_update(action):
         nickname = session['nickname']
         gamecode = session['room']
         if gamecode not in lobbies:
@@ -97,7 +98,7 @@ def register_events(socketio):
             leave_lobby(gamecode, nickname)
 
         print(f'All lobbies: {str(lobbies)}')
-        data_update(gamecode)
+        lobby_player_data(gamecode)
 
     
     def leave_lobby(gamecode, nickname):
@@ -107,8 +108,8 @@ def register_events(socketio):
         session.clear()
         print(f'{nickname} left {gamecode}')
 
-    @socketio.on('kick_player')
-    def kick_player(nickname):
+    @socketio.on('lobby_kick_player')
+    def lobby_kick_player(nickname):
         gamecode = session['room']
         if gamecode not in lobbies:
             return print_error(f"Gamecode {gamecode} not found")
@@ -116,9 +117,9 @@ def register_events(socketio):
             return print_error(f"{session['nickname']} is not the owner of {gamecode}")
         if nickname in lobbies[gamecode].players:
             data = {'nickname': nickname}
-            send_data('kicked', data, gamecode)
-            print_warning(f'{nickname} was kicked from {gamecode}')
-            return data_update(gamecode)
+            send_data('lobby_kicked', data, gamecode)
+            print_warning(f'{nickname} was lobby_kicked from {gamecode}')
+            return lobby_player_data(gamecode)
         else:
             print_error(f'{nickname} not found in {gamecode}')
 
@@ -132,27 +133,41 @@ def register_events(socketio):
         if len(lobbies[gamecode].players) < min_players:
             return print_error(f"Not enough players in {gamecode}")
         settings = lobbies[gamecode].settings
-        new_game = Game(gamecode, settings['p2w'], settings['rt'], settings['cpp'], lobbies[gamecode].players)
+        # Open the file
+        print(os.listdir())
+        with open('./HaosCards/cards/white_cards.json', 'r') as file:
+            # Load the JSON data from the file
+            white_cards_data = json.load(file)
+        with open('./HaosCards/cards/black_cards.json', 'r') as file:
+            # Load the JSON data from the file
+            black_cards_data = json.load(file)
+        white_cards = white_cards_data['white_cards']
+        black_cards = black_cards_data['black_cards']
+        print_error(f"White cards: {len(white_cards)}")
+        print_error(f"Black cards: {len(black_cards)}")
+        black_cards_dict = {i: card for i, card in enumerate(black_cards)}
+        white_cards_dict = {i: card for i, card in enumerate(white_cards)}
+        new_game = Game(gamecode, settings['p2w'], settings['rt'], settings['cpp'], lobbies[gamecode].players, white_cards_dict, black_cards_dict)
         games[gamecode] = new_game
         print_error(f"{str(new_game)}")       
-        send_data('game_started', {}, gamecode)
+        send_data('lobby_game_started', {}, gamecode)
         print(f'All lobbies: {str(lobbies)}')
 
     @socketio.on('get_data')
     def get_data(gamecode):
-        data_update(gamecode)
+        lobby_player_data(gamecode)
 
-    def data_update(gamecode):
+    def lobby_player_data(gamecode):
         players = lobbies[gamecode].players
         owner = lobbies[gamecode].owner
         data = {'players': players, 'owner':owner}
-        send_data('data_update', data, gamecode)
+        send_data('lobby_player_data', data, gamecode)
         print(f'Updated with data {players} {owner}')
 
-    @socketio.on('request_settings')
-    def request_settings(gamecode):
+    @socketio.on('lobby_request_settings')
+    def lobby_request_settings(gamecode):
         settings = lobbies[gamecode].settings
-        send_data("settings_data", settings, gamecode)
+        send_data("lobby_settings_data", settings, gamecode)
        
     @socketio.on('change_settings')
     def change_settings(data):
@@ -163,7 +178,7 @@ def register_events(socketio):
             return print_error(f"Gamecode {gamecode} not found")
         settings = lobbies[gamecode].settings
         settings[target] = value
-        send_data('settings_data', settings, gamecode)
+        send_data('lobby_settings_data', settings, gamecode)
         server_response(data)
 
     def send_data(function_name, data, gamecode):

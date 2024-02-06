@@ -19,15 +19,13 @@
                     "{{ session['room'] }}",
                     "{{ session['player_room'] }}")
 
-        socket.emit('player_update', 
+        socket.emit('lobby_player_update', 
                     'join');
         
         socket.on('server_response', function(data) {
-            var acknowledgement_id = data.acknowledgement_id;
-            console.log('Received server response: ', acknowledgement_id);
-            return acknowledgements[acknowledgement_id] = "true";
+            server_response(data);
         });
-        socket.on('data_update', function(data) {
+        socket.on('lobby_player_data', function(data) {
             console.log(data)
             var players = data.players;
             var owner = data.owner;
@@ -38,22 +36,22 @@
 
         })
 
-        socket.on("kicked", function(data) {
+        socket.on("lobby_kicked", function(data) {
             console.log(data)
             client_response(data)
             if (data.nickname === "{{ session['nickname'] }}") {
-            console.log("You have been kicked from the lobby.");
+            console.log("You have been lobby_kicked from the lobby.");
             leave_lobby();
             }
         })
 
-        socket.emit('request_settings', 
+        socket.emit('lobby_request_settings', 
                     "{{ session['room'] }}")
         
 
         
 
-        socket.on('settings_data', function(data) {
+        socket.on('lobby_settings_data', function(data) {
             console.log(data)
             var points2win = data.p2w;
             var roundTime = data.rt;
@@ -64,7 +62,7 @@
 
         })
 
-        socket.on('game_started', function(data) {
+        socket.on('lobby_game_started', function(data) {
             console.log('Game started');
             client_response(data)
             window.location.href = "{{ url_for('play') }}";
@@ -128,7 +126,7 @@
         nickname = "{{ session['nickname'] }}"
         gamecode = "{{ session['room'] }}"
         console.log(nickname," left the lobby");
-        socket.emit('player_update','leave', function() {
+        socket.emit('lobby_player_update', 'leave', function() {
             socket.disconnect();
             window.location.href = "{{ url_for('home') }}";
         });
@@ -172,7 +170,7 @@
                 kickButton.addEventListener('click', () => {
                     var nickname = `${player}`;
                     console.log(`Kicking ${player} from the lobby.`);
-                    socket.emit('kick_player', nickname);
+                    socket.emit('lobby_kick_player', nickname);
                 });
                 playerElement.appendChild(kickButton);
             } else {

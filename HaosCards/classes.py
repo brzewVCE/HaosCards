@@ -23,12 +23,12 @@ class Player:
     def __str__(self):
         return f"Name: {self.name}, Score: {self.score}, Status: {self.status}, Unique Room: {self.unique_room}, Acknowledgement: {self.acknowledgement}, Lobby Score: {self.lobby_score}, Game Score: {self.game_score}"
 class Game:
-    def __init__(self, gamecode, point2win, round_time, cards_per_player, players): 
-        # with open('static/white_cards.json', 'r') as file:
-        #     self.white_cards = json.load(file)
-        # with open('static/black_cards.json', 'r') as file:
-        #     self.black_cards = json.load(file)
-        self.used_cards = {}
+    def __init__(self, gamecode, point2win, round_time, cards_per_player, players, white_cards, black_cards): 
+        self.white_cards = white_cards
+        self.black_cards = black_cards
+        self.player_cards = {}
+        self.used_white_cards = []
+        self.used_black_cards = []
         self.gamecode = gamecode
         self.point2win = point2win
         self.round_time = round_time
@@ -37,7 +37,7 @@ class Game:
         self.current_black_card = None
         
     def __str__(self):
-        return f'Game(gamecode={self.gamecode}, point2win={self.point2win}, round_time={self.round_time}, cards_per_player={self.cards_per_player}, players={self.players})'    
+        return f'Game(gamecode={self.gamecode}, point2win={self.point2win}, round_time={self.round_time}, cards_per_player={self.cards_per_player}, players={self.players}, white_cards={self.white_cards}, black_cards={self.black_cards})'
 class Lobby:
     def __init__(self, gamecode):
         self.gamecode = gamecode

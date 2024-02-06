@@ -31,3 +31,9 @@ function client_response(data) {
     console.log('client_response: ',acknowledgement_id)
     socket.emit('client_response', acknowledgement_id)
 }
+
+function server_response(data) {
+    var acknowledgement_id = data.acknowledgement_id;
+    console.log('Received server response: ', acknowledgement_id);
+    return acknowledgements[acknowledgement_id] = "true";
+};
