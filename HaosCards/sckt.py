@@ -147,8 +147,6 @@ def register_events(socketio):
         print_error(f"Black cards: {len(black_cards)}")
         black_cards_dict = {i: card for i, card in enumerate(black_cards)}
         white_cards_dict = {i: card for i, card in enumerate(white_cards)}
-        print_error(f"White cards: {white_cards_dict}")
-        print_error(f"Black cards: {black_cards_dict}")
         new_game = Game(gamecode, settings['p2w'], settings['rt'], settings['cpp'], lobbies[gamecode].players, white_cards_dict, black_cards_dict)
         games[gamecode] = new_game
         print_error(f"{str(new_game)}")       
