@@ -108,8 +108,8 @@ def register_events(socketio):
         session.clear()
         print(f'{nickname} left {gamecode}')
 
-    @socketio.on('kick_player')
-    def kick_player(nickname):
+    @socketio.on('lobby_kick_player')
+    def lobby_kick_player(nickname):
         gamecode = session['room']
         if gamecode not in lobbies:
             return print_error(f"Gamecode {gamecode} not found")
@@ -150,7 +150,7 @@ def register_events(socketio):
         new_game = Game(gamecode, settings['p2w'], settings['rt'], settings['cpp'], lobbies[gamecode].players, white_cards_dict, black_cards_dict)
         games[gamecode] = new_game
         print_error(f"{str(new_game)}")       
-        send_data('game_started', {}, gamecode)
+        send_data('lobby_game_started', {}, gamecode)
         print(f'All lobbies: {str(lobbies)}')
 
     @socketio.on('get_data')
@@ -164,10 +164,10 @@ def register_events(socketio):
         send_data('lobby_player_data', data, gamecode)
         print(f'Updated with data {players} {owner}')
 
-    @socketio.on('request_settings')
-    def request_settings(gamecode):
+    @socketio.on('lobby_request_settings')
+    def lobby_request_settings(gamecode):
         settings = lobbies[gamecode].settings
-        send_data("settings_data", settings, gamecode)
+        send_data("lobby_settings_data", settings, gamecode)
        
     @socketio.on('change_settings')
     def change_settings(data):
@@ -178,7 +178,7 @@ def register_events(socketio):
             return print_error(f"Gamecode {gamecode} not found")
         settings = lobbies[gamecode].settings
         settings[target] = value
-        send_data('settings_data', settings, gamecode)
+        send_data('lobby_settings_data', settings, gamecode)
         server_response(data)
 
     def send_data(function_name, data, gamecode):

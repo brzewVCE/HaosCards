@@ -45,13 +45,13 @@
             }
         })
 
-        socket.emit('request_settings', 
+        socket.emit('lobby_request_settings', 
                     "{{ session['room'] }}")
         
 
         
 
-        socket.on('settings_data', function(data) {
+        socket.on('lobby_settings_data', function(data) {
             console.log(data)
             var points2win = data.p2w;
             var roundTime = data.rt;
@@ -62,7 +62,7 @@
 
         })
 
-        socket.on('game_started', function(data) {
+        socket.on('lobby_game_started', function(data) {
             console.log('Game started');
             client_response(data)
             window.location.href = "{{ url_for('play') }}";
@@ -170,7 +170,7 @@
                 kickButton.addEventListener('click', () => {
                     var nickname = `${player}`;
                     console.log(`Kicking ${player} from the lobby.`);
-                    socket.emit('kick_player', nickname);
+                    socket.emit('lobby_kick_player', nickname);
                 });
                 playerElement.appendChild(kickButton);
             } else {
