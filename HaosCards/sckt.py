@@ -98,7 +98,7 @@ def register_events(socketio):
             leave_lobby(gamecode, nickname)
 
         print(f'All lobbies: {str(lobbies)}')
-        data_update(gamecode)
+        lobby_player_update(gamecode)
 
     
     def leave_lobby(gamecode, nickname):
@@ -119,7 +119,7 @@ def register_events(socketio):
             data = {'nickname': nickname}
             send_data('kicked', data, gamecode)
             print_warning(f'{nickname} was kicked from {gamecode}')
-            return data_update(gamecode)
+            return lobby_player_update(gamecode)
         else:
             print_error(f'{nickname} not found in {gamecode}')
 
@@ -155,13 +155,13 @@ def register_events(socketio):
 
     @socketio.on('get_data')
     def get_data(gamecode):
-        data_update(gamecode)
+        lobby_player_update(gamecode)
 
-    def data_update(gamecode):
+    def lobby_player_update(gamecode):
         players = lobbies[gamecode].players
         owner = lobbies[gamecode].owner
         data = {'players': players, 'owner':owner}
-        send_data('data_update', data, gamecode)
+        send_data('lobby_player_update', data, gamecode)
         print(f'Updated with data {players} {owner}')
 
     @socketio.on('request_settings')
