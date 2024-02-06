@@ -23,9 +23,7 @@
                     'join');
         
         socket.on('server_response', function(data) {
-            var acknowledgement_id = data.acknowledgement_id;
-            console.log('Received server response: ', acknowledgement_id);
-            return acknowledgements[acknowledgement_id] = "true";
+            server_response(data);
         });
         socket.on('lobby_player_data', function(data) {
             console.log(data)
