@@ -19,7 +19,7 @@
                     "{{ session['room'] }}",
                     "{{ session['player_room'] }}")
 
-        socket.emit('player_update', 
+        socket.emit('lobby_player_update', 
                     'join');
         
         socket.on('server_response', function(data) {
@@ -128,7 +128,7 @@
         nickname = "{{ session['nickname'] }}"
         gamecode = "{{ session['room'] }}"
         console.log(nickname," left the lobby");
-        socket.emit('player_update', 'leave', function() {
+        socket.emit('lobby_player_update', 'leave', function() {
             socket.disconnect();
             window.location.href = "{{ url_for('home') }}";
         });

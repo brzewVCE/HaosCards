@@ -65,8 +65,8 @@ def register_events(socketio):
         print_error(f"{nickname}'s rooms: {rooms()}")
         print_info(f'{str(new_player)}')
 
-    @socketio.on('player_update')
-    def player_update(action):
+    @socketio.on('lobby_player_update')
+    def lobby_player_update(action):
         nickname = session['nickname']
         gamecode = session['room']
         if gamecode not in lobbies:
