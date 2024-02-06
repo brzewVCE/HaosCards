@@ -8,6 +8,7 @@ from color_print import print_info, print_error, print_warning
 import eventlet
 import random
 import uuid
+import os
 
 lobbies={}
 games={}
@@ -132,7 +133,23 @@ def register_events(socketio):
         if len(lobbies[gamecode].players) < min_players:
             return print_error(f"Not enough players in {gamecode}")
         settings = lobbies[gamecode].settings
-        new_game = Game(gamecode, settings['p2w'], settings['rt'], settings['cpp'], lobbies[gamecode].players)
+        # Open the file
+        print(os.listdir())
+        with open('./HaosCards/cards/white_cards.json', 'r') as file:
+            # Load the JSON data from the file
+            white_cards_data = json.load(file)
+        with open('./HaosCards/cards/black_cards.json', 'r') as file:
+            # Load the JSON data from the file
+            black_cards_data = json.load(file)
+        white_cards = white_cards_data['white_cards']
+        black_cards = black_cards_data['black_cards']
+        print_error(f"White cards: {white_cards}")
+        print_error(f"Black cards: {black_cards}")
+        black_cards_dict = {i: card for i, card in enumerate(black_cards)}
+        white_cards_dict = {i: card for i, card in enumerate(white_cards)}
+        print_error(f"White cards: {white_cards_dict}")
+        print_error(f"Black cards: {black_cards_dict}")
+        new_game = Game(gamecode, settings['p2w'], settings['rt'], settings['cpp'], lobbies[gamecode].players, white_cards_dict, black_cards_dict)
         games[gamecode] = new_game
         print_error(f"{str(new_game)}")       
         send_data('game_started', {}, gamecode)
