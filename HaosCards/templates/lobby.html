@@ -27,7 +27,7 @@
             console.log('Received server response: ', acknowledgement_id);
             return acknowledgements[acknowledgement_id] = "true";
         });
-        socket.on('lobby_player_update', function(data) {
+        socket.on('lobby_player_data', function(data) {
             console.log(data)
             var players = data.players;
             var owner = data.owner;
