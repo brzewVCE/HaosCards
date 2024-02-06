@@ -38,11 +38,11 @@
 
         })
 
-        socket.on("kicked", function(data) {
+        socket.on("lobby_kicked", function(data) {
             console.log(data)
             client_response(data)
             if (data.nickname === "{{ session['nickname'] }}") {
-            console.log("You have been kicked from the lobby.");
+            console.log("You have been lobby_kicked from the lobby.");
             leave_lobby();
             }
         })
