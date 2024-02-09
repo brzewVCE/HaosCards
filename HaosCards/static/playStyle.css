@@ -1,0 +1,196 @@
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: url('fonts/HelveticaNeue.woff2') format('woff2'), /* Modern Browsers */
+         url('fonts/HelveticaNeue.woff') format('woff'); /* Older Browsers */
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0px;
+      padding: 0px;
+  }
+  
+  .layout {
+      display: grid;
+      grid: "header header header" auto "leftSide body rightSide" 1fr "footer footer footer" auto / auto 1fr auto;
+      gap: 8px;
+      background-color: #f0f0f0;
+      height: 100vh;
+      width: 100vw;
+      outline: 2px solid black; /* Add an outline to the layout container */
+  }
+  
+  .header {
+      grid-area: header;
+      display: flex;
+      justify-content: center;
+      outline: 2px solid green; /* Add an outline to the header container */
+  }
+  
+  .leftSide {
+      grid-area: leftSide;
+      outline: 2px solid blue; /* Add an outline to the leftSide container */
+      position: relative;
+  }
+  
+  .body {
+      grid-area: body;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      outline: 2px solid orange; /* Add an outline to the body container */
+  }
+  
+  .rightSide {
+      grid-area: rightSide;
+      outline: 2px solid purple; /* Add an outline to the rightSide container */
+  }
+  
+  .footer {
+      grid-area: footer;
+      display: flex;
+      justify-content: center;
+      outline: 2px solid yellow; /* Add an outline to the footer container */
+  }
+  
+  #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+  }
+  
+  #scoreboard {
+      position: absolute; /* Set the scoreboard to an absolute position within the leftSide container */
+      top: 10px; /* Adjust the top position as needed */
+      left: 10px; /* Adjust the left position as needed */
+      background-color: #fff;
+      padding: 10px;
+      border: 2px solid #000;
+      border-radius: 5px;
+      font-size: 1.2rem;
+      width: 10vw;
+      min-width: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: left;
+      max-height: 40vw;
+      overflow: auto;
+  }
+  
+  .scoreboardEntry {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      padding: 5px;
+      border-radius: 5px;
+  
+  }
+  
+  .scoreboardName {
+      justify-content: left;
+      white-space: nowrap;
+      flex: 1 0 auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 70%;
+  }
+  
+  .scoreboardScore {
+      font-weight: bold;
+      justify-content: center;
+      white-space: nowrap;
+  }   
+  
+  
+  #timer {
+      font-size: 1.5rem;
+      color: #1F51FF;
+  }
+  
+  .black_card {
+      width: 63.5%;
+      max-width: 100px;
+      height: 88%;
+      max-height: 150px;
+      background-color: #000;
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+      margin: 5px;
+      transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .black_card:hover {
+          transform: scale(1.1);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+  
+  .cardContainer {
+      display: flex;
+      flex-wrap: wrap;
+      overflow-x: auto;
+      justify-content: center;
+      align-items: center;
+      height: 40vh;
+      width: 70vw;
+      outline: 2px solid transparent;
+      box-shadow: 0 0 0px rgba(0, 0, 0, 0.5);
+      transition: box-shadow 0.3s ease-in-out;
+      margin-bottom: 10px;
+      
+  }
+  
+  .cardContainer:hover {
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+  }
+  
+  .white_card {
+      width: 63.5%;
+      max-width: 100px;
+      height: 88%;
+      max-height: 150px;
+      background-color: #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+      margin: 5px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+      .white_card:hover {
+          transform: scale(1.1);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+  
+  .selected {
+      transform: scale(1.05);
+      background-color: #1F51FF;
+      border-color: #1F51FF;
+      box-shadow: 0 0 30px rgba(31, 81, 255, 0.5);
+  }
+  
+  #selectButton {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+  }
+  
+      #selectButton:hover {
+          background-color: #1F51FF;
+      }
