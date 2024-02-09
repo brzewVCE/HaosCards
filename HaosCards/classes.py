@@ -23,11 +23,11 @@ class Player:
     def __str__(self):
         return f"Name: {self.name}, Score: {self.score}, Status: {self.status}, Unique Room: {self.unique_room}, Acknowledgement: {self.acknowledgement}, Lobby Score: {self.lobby_score}, Game Score: {self.game_score}"
 class Game:
-    def __init__(self, gamecode, point2win, round_time, cards_per_player, players, white_cards, black_cards, player_cards): 
+    def __init__(self, gamecode, point2win, round_time, cards_per_player, players, white_cards, black_cards, player_cards, used_white_cards): 
         self.white_cards = white_cards
         self.black_cards = black_cards
         self.player_cards = player_cards
-        self.used_white_cards = []
+        self.used_white_cards = used_white_cards
         self.used_black_cards = []
         self.gamecode = gamecode
         self.point2win = point2win

@@ -162,12 +162,14 @@ def register_events(socketio):
         player_cards = {}
         used_white_cards = []
         for player in lobbies[gamecode].player_data:
-            cards = random.sample(list(white_cards_dict.keys()), settings['cpp'])
-            player_cards[player.name] = cards
-            for card in cards:
-                used_white_cards.append(card)
-                        
-        new_game = Game(gamecode, settings['p2w'], settings['rt'], settings['cpp'], lobbies[gamecode].players, white_cards_dict, black_cards_dict, player_cards)
+            cards = []
+            while len(cards) < settings['cpp']:
+                card = random.choice(list(white_cards_dict.keys()))
+                if card not in used_white_cards:
+                    cards.append(card)
+                    used_white_cards.append(card)
+            player_cards[player.name] = cards                       
+        new_game = Game(gamecode, settings['p2w'], settings['rt'], settings['cpp'], lobbies[gamecode].players, white_cards_dict, black_cards_dict, player_cards, used_white_cards)
         games[gamecode] = new_game
         print_error(f"{str(new_game)}")       
         send_data('lobby_game_started', {}, gamecode)
