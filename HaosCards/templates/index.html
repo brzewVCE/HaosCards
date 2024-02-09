@@ -34,6 +34,9 @@
                 if (data.valid == 'Name') {
                     return $('#warning').text('There is already a user with that nickname in the lobby. Please change your name');
                 }
+                else if (data.valid == "Game") {
+                    return $('#warning').text('Game is already in progress');
+                }
                 else {
                     return $('#warning').text('Invalid game code');
                 }
