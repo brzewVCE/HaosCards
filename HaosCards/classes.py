@@ -36,6 +36,8 @@ class Game:
         self.players = players
         self.current_black_card = None
         self.current_white_cards = {}
+        self.current_state = "waiting"
+        self.ready_players = []
         
     def __str__(self):
         return f'Game(gamecode={self.gamecode}, point2win={self.point2win}, round_time={self.round_time}, cards_per_player={self.cards_per_player}, players={self.players}, player_cards={self.player_cards}, white_cards={self.white_cards}, black_cards={self.black_cards}, used_white_cards={self.used_white_cards}, used_black_cards={self.used_black_cards}, current_black_card={self.current_black_card}, current_white_cards={self.current_white_cards})'

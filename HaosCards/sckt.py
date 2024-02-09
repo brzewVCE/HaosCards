@@ -103,15 +103,20 @@ def register_events(socketio):
         lobby_player_data(gamecode)
 
 
-    socketio.on("play_data")
-    def play_data(data):
+    @socketio.on("play_data_request")
+    def play_data_request():
+        play_data_response()
+        
+    def play_data_response():
         gamecode = session['room']
         if gamecode not in games:
             return print_error(f"Gamecode {gamecode} not found")
         game = games[gamecode]
         player = [player for player in game.players if player.name == session['nickname']][0]
-        player.cards = data['cards']
-        print_info(f"{session['nickname']} played {data['cards']}")
+        cards = game.player_cards[player.name]
+        game_state = game.current_state
+        data = {'game_state': game_state, 'cards': cards}
+        send_data('play_data_response', data, gamecode)
     
     def leave_lobby(gamecode, nickname):
         unique_room = session['player_room']
