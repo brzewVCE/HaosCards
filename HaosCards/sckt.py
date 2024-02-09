@@ -24,6 +24,8 @@ def register_events(socketio):
         if gamecode in lobbies:
             if nickname in lobbies[gamecode].players:
                 return emit('game_code_valid', {'valid': 'Name'})
+            elif gamecode in games:
+                return emit('game_code_valid', {'valid': 'Game'})
             return emit('game_code_valid', {'valid': 'True'})
         else:
             emit('game_code_valid', {'valid': 'False'})
@@ -100,6 +102,16 @@ def register_events(socketio):
         print(f'All lobbies: {str(lobbies)}')
         lobby_player_data(gamecode)
 
+
+    socketio.on("play_data")
+    def play_data(data):
+        gamecode = session['room']
+        if gamecode not in games:
+            return print_error(f"Gamecode {gamecode} not found")
+        game = games[gamecode]
+        player = [player for player in game.players if player.name == session['nickname']][0]
+        player.cards = data['cards']
+        print_info(f"{session['nickname']} played {data['cards']}")
     
     def leave_lobby(gamecode, nickname):
         unique_room = session['player_room']
@@ -147,7 +159,14 @@ def register_events(socketio):
         print_error(f"Black cards: {len(black_cards)}")
         black_cards_dict = {i: card for i, card in enumerate(black_cards)}
         white_cards_dict = {i: card for i, card in enumerate(white_cards)}
-        new_game = Game(gamecode, settings['p2w'], settings['rt'], settings['cpp'], lobbies[gamecode].players, white_cards_dict, black_cards_dict)
+        player_cards = {}
+        for player in lobbies[gamecode].player_data:
+            player_cards[player.name] = {}
+            for i in range(settings['cpp']):
+                card = random.choice(white_cards)
+                white_cards.remove(card)
+                player_cards[player.name][i] = card
+        new_game = Game(gamecode, settings['p2w'], settings['rt'], settings['cpp'], lobbies[gamecode].players, white_cards_dict, black_cards_dict, player_cards)
         games[gamecode] = new_game
         print_error(f"{str(new_game)}")       
         send_data('lobby_game_started', {}, gamecode)
