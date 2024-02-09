@@ -109,10 +109,11 @@ def register_events(socketio):
         
     def play_data_response():
         gamecode = session['room']
+        nickname = session['nickname']
         if gamecode not in games:
             return print_error(f"Gamecode {gamecode} not found")
         game = games[gamecode]
-        player = [player for player in game.players if player.name == session['nickname']][0]
+        player = [player for player in lobbies[gamecode].player_data if player.name == nickname][0]
         card_indexes = game.player_cards[player.name]
         cards = {index: game.white_cards[index] for index in card_indexes}
         game_state = game.current_state
